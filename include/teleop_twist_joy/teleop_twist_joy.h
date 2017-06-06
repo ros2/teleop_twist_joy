@@ -25,7 +25,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 #ifndef TELEOP_TWIST_JOY_TELEOP_TWIST_JOY_H
 #define TELEOP_TWIST_JOY_TELEOP_TWIST_JOY_H
 
-namespace ros { class NodeHandle; }
+#include <rclcpp/rclcpp.hpp>
 
 namespace teleop_twist_joy
 {
@@ -36,7 +36,7 @@ namespace teleop_twist_joy
 class TeleopTwistJoy
 {
 public:
-  TeleopTwistJoy(ros::NodeHandle* nh, ros::NodeHandle* nh_param);
+  TeleopTwistJoy(rclcpp::node::Node::SharedPtr & node);
 
 private:
   struct Impl;
