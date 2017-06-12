@@ -80,7 +80,7 @@ TeleopTwistJoy::TeleopTwistJoy(rclcpp::node::Node::SharedPtr & node)
   rmw_qos_profile_t custom_qos_profile;
   custom_qos_profile.history = RMW_QOS_POLICY_HISTORY_KEEP_LAST;
   custom_qos_profile.depth = 50;
-  custom_qos_profile.reliability = RMW_QOS_POLICY_RELIABILITY_RELIABLE;
+  custom_qos_profile.reliability = RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT;
   custom_qos_profile.durability = RMW_QOS_POLICY_DURABILITY_VOLATILE;
 
   pimpl_->cmd_vel_pub = node->create_publisher<geometry_msgs::msg::Twist>("cmd_vel",
