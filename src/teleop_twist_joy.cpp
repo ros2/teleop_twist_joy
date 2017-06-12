@@ -77,17 +77,11 @@ TeleopTwistJoy::TeleopTwistJoy(rclcpp::node::Node::SharedPtr & node)
 
   pimpl_->node = node;
 
-  rmw_qos_profile_t custom_qos_profile;
-  custom_qos_profile.history = RMW_QOS_POLICY_HISTORY_KEEP_LAST;
-  custom_qos_profile.depth = 50;
-  custom_qos_profile.reliability = RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT;
-  custom_qos_profile.durability = RMW_QOS_POLICY_DURABILITY_VOLATILE;
-
   pimpl_->cmd_vel_pub = node->create_publisher<geometry_msgs::msg::Twist>("cmd_vel",
-    custom_qos_profile);
+    rmw_qos_profile_sensor_data);
   pimpl_->joy_sub = node->create_subscription<sensor_msgs::msg::Joy>("joy",
     std::bind(&TeleopTwistJoy::Impl::joyCallback, this->pimpl_, std::placeholders::_1),
-    custom_qos_profile);
+    rmw_qos_profile_sensor_data);
 
   pimpl_->parameter_service = std::make_shared<rclcpp::parameter_service::ParameterService>(node);
 
