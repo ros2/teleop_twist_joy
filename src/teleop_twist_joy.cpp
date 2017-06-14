@@ -85,7 +85,7 @@ TeleopTwistJoy::TeleopTwistJoy(rclcpp::node::Node::SharedPtr & node)
 
   pimpl_->parameter_service = std::make_shared<rclcpp::parameter_service::ParameterService>(node);
 
-  pimpl_->enable_button = 0;
+  pimpl_->enable_button = 5;
   node->get_parameter("enable_button", pimpl_->enable_button);
 
   pimpl_->enable_turbo_button = -1;
@@ -101,7 +101,7 @@ TeleopTwistJoy::TeleopTwistJoy(rclcpp::node::Node::SharedPtr & node)
   // }
   // else
   {
-    pimpl_->axis_linear_map["x"] = 1;
+    pimpl_->axis_linear_map["x"] = 5;
     node->get_parameter("axis_linear", pimpl_->axis_linear_map["x"]);
     pimpl_->scale_linear_map["x"] = 0.5;
     node->get_parameter("scale_linear", pimpl_->scale_linear_map["x"]);
@@ -119,7 +119,7 @@ TeleopTwistJoy::TeleopTwistJoy(rclcpp::node::Node::SharedPtr & node)
   // }
   // else
   {
-    pimpl_->axis_angular_map["yaw"] = 0;
+    pimpl_->axis_angular_map["yaw"] = 2;
     node->get_parameter("axis_angular", pimpl_->axis_angular_map["yaw"]);
     pimpl_->scale_angular_map["yaw"] = 0.5;
     node->get_parameter("scale_angular", pimpl_->scale_angular_map["yaw"]);
