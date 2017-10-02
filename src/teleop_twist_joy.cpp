@@ -25,14 +25,15 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 #include "teleop_twist_joy/teleop_twist_joy.h"
 
 #include <geometry_msgs/msg/twist.hpp>
+#include <rcutils/logging_macros.h>
 #include <sensor_msgs/msg/joy.hpp>
 
 #include <functional>
 #include <map>
 #include <string>
 
-#define ROS_INFO_NAMED(name, format, ...) fprintf(stdout, format"\n", __VA_ARGS__)
-#define ROS_INFO_COND_NAMED(cond, name, format, ...) fprintf(stdout, format"\n", __VA_ARGS__)
+#define ROS_INFO_NAMED RCUTILS_LOG_INFO_NAMED
+#define ROS_INFO_COND_NAMED RCUTILS_LOG_INFO_EXPRESSION_NAMED
 
 namespace teleop_twist_joy
 {
