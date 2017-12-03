@@ -50,7 +50,7 @@ struct TeleopTwistJoy::Impl
   rclcpp::node::Node::SharedPtr node;
   rclcpp::parameter_service::ParameterService::SharedPtr parameter_service;
 
-  rclcpp::publisher::Publisher<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_pub;
+  rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_pub;
   rclcpp::subscription::Subscription<sensor_msgs::msg::Joy>::SharedPtr joy_sub;
 
   int enable_button;
