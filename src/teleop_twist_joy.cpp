@@ -51,7 +51,7 @@ struct TeleopTwistJoy::Impl
   rclcpp::parameter_service::ParameterService::SharedPtr parameter_service;
 
   rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_pub;
-  rclcpp::subscription::Subscription<sensor_msgs::msg::Joy>::SharedPtr joy_sub;
+  rclcpp::Subscription<sensor_msgs::msg::Joy>::SharedPtr joy_sub;
 
   int enable_button;
   int enable_turbo_button;
