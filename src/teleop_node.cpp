@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
 {
   rclcpp::init(argc, argv);
 
-  rclcpp::node::Node::SharedPtr node = rclcpp::node::Node::make_shared("teleop_twist_joy_node");
+  rclcpp::Node::SharedPtr node = rclcpp::Node::make_shared("teleop_twist_joy_node");
 
   teleop_twist_joy::TeleopTwistJoy joy_teleop(node);
 

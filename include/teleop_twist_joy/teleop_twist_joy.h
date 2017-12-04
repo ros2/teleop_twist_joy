@@ -36,7 +36,7 @@ namespace teleop_twist_joy
 class TeleopTwistJoy
 {
 public:
-  TeleopTwistJoy(rclcpp::node::Node::SharedPtr & node);
+  TeleopTwistJoy(rclcpp::Node::SharedPtr & node);
 
 private:
   struct Impl;

@@ -47,7 +47,7 @@ struct TeleopTwistJoy::Impl
 {
   void joyCallback(const sensor_msgs::msg::Joy::SharedPtr joy);
 
-  rclcpp::node::Node::SharedPtr node;
+  rclcpp::Node::SharedPtr node;
   rclcpp::ParameterService::SharedPtr parameter_service;
 
   rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_pub;
@@ -72,7 +72,7 @@ struct TeleopTwistJoy::Impl
  * \param nh NodeHandle to use for setting up the publisher and subscriber.
  * \param nh_param NodeHandle to use for searching for configuration parameters.
  */
-TeleopTwistJoy::TeleopTwistJoy(rclcpp::node::Node::SharedPtr & node)
+TeleopTwistJoy::TeleopTwistJoy(rclcpp::Node::SharedPtr & node)
 {
   pimpl_ = new Impl();
 
