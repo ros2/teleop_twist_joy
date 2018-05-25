@@ -48,7 +48,6 @@ struct TeleopTwistJoy::Impl
   void joyCallback(const sensor_msgs::msg::Joy::SharedPtr joy);
 
   rclcpp::Node::SharedPtr node;
-  rclcpp::ParameterService::SharedPtr parameter_service;
 
   rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_pub;
   rclcpp::Subscription<sensor_msgs::msg::Joy>::SharedPtr joy_sub;
@@ -83,8 +82,6 @@ TeleopTwistJoy::TeleopTwistJoy(rclcpp::Node::SharedPtr & node)
   pimpl_->joy_sub = node->create_subscription<sensor_msgs::msg::Joy>("joy",
     std::bind(&TeleopTwistJoy::Impl::joyCallback, this->pimpl_, std::placeholders::_1),
     rmw_qos_profile_sensor_data);
-
-  pimpl_->parameter_service = std::make_shared<rclcpp::ParameterService>(node);
 
   pimpl_->enable_button = 5;
   node->get_parameter("enable_button", pimpl_->enable_button);
