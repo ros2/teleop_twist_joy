@@ -33,10 +33,12 @@ namespace teleop_twist_joy
 /**
  * Class implementing a basic Joy -> Twist translation.
  */
-class TeleopTwistJoy
+class TeleopTwistJoy : public rclcpp::Node
 {
 public:
-  TeleopTwistJoy(rclcpp::Node::SharedPtr & node);
+  TeleopTwistJoy();
+
+  virtual ~TeleopTwistJoy();
 
 private:
   struct Impl;

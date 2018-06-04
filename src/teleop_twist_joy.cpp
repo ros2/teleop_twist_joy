@@ -47,8 +47,6 @@ struct TeleopTwistJoy::Impl
 {
   void joyCallback(const sensor_msgs::msg::Joy::SharedPtr joy);
 
-  rclcpp::Node::SharedPtr node;
-
   rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_pub;
   rclcpp::Subscription<sensor_msgs::msg::Joy>::SharedPtr joy_sub;
 
@@ -68,26 +66,22 @@ struct TeleopTwistJoy::Impl
 
 /**
  * Constructs TeleopTwistJoy.
- * \param nh NodeHandle to use for setting up the publisher and subscriber.
- * \param nh_param NodeHandle to use for searching for configuration parameters.
  */
-TeleopTwistJoy::TeleopTwistJoy(rclcpp::Node::SharedPtr & node)
+TeleopTwistJoy::TeleopTwistJoy() : Node("teleop_twist_joy_node")
 {
   pimpl_ = new Impl();
 
-  pimpl_->node = node;
-
-  pimpl_->cmd_vel_pub = node->create_publisher<geometry_msgs::msg::Twist>("cmd_vel",
+  pimpl_->cmd_vel_pub = this->create_publisher<geometry_msgs::msg::Twist>("cmd_vel",
     rmw_qos_profile_sensor_data);
-  pimpl_->joy_sub = node->create_subscription<sensor_msgs::msg::Joy>("joy",
+  pimpl_->joy_sub = this->create_subscription<sensor_msgs::msg::Joy>("joy",
     std::bind(&TeleopTwistJoy::Impl::joyCallback, this->pimpl_, std::placeholders::_1),
     rmw_qos_profile_sensor_data);
 
   pimpl_->enable_button = 5;
-  node->get_parameter("enable_button", pimpl_->enable_button);
+  this->get_parameter("enable_button", pimpl_->enable_button);
 
   pimpl_->enable_turbo_button = -1;
-  node->get_parameter("enable_turbo_button", pimpl_->enable_turbo_button);
+  this->get_parameter("enable_turbo_button", pimpl_->enable_turbo_button);
 
   // TODO(clalancette): node->get_parameter(s) doesn't seem to
   // support getting a map of values yet.  Revisit this once it does.
@@ -100,11 +94,11 @@ TeleopTwistJoy::TeleopTwistJoy(rclcpp::Node::SharedPtr & node)
   // else
   {
     pimpl_->axis_linear_map["x"] = 5;
-    node->get_parameter("axis_linear", pimpl_->axis_linear_map["x"]);
+    this->get_parameter("axis_linear", pimpl_->axis_linear_map["x"]);
     pimpl_->scale_linear_map["x"] = 0.5;
-    node->get_parameter("scale_linear", pimpl_->scale_linear_map["x"]);
+    this->get_parameter("scale_linear", pimpl_->scale_linear_map["x"]);
     pimpl_->scale_linear_turbo_map["x"] = 1.0;
-    node->get_parameter("scale_linear_turbo", pimpl_->scale_linear_turbo_map["x"]);
+    this->get_parameter("scale_linear_turbo", pimpl_->scale_linear_turbo_map["x"]);
   }
 
   // TODO(clalancette): node->get_parameter(s) doesn't seem to
@@ -118,11 +112,11 @@ TeleopTwistJoy::TeleopTwistJoy(rclcpp::Node::SharedPtr & node)
   // else
   {
     pimpl_->axis_angular_map["yaw"] = 2;
-    node->get_parameter("axis_angular", pimpl_->axis_angular_map["yaw"]);
+    this->get_parameter("axis_angular", pimpl_->axis_angular_map["yaw"]);
     pimpl_->scale_angular_map["yaw"] = 0.5;
-    node->get_parameter("scale_angular", pimpl_->scale_angular_map["yaw"]);
+    this->get_parameter("scale_angular", pimpl_->scale_angular_map["yaw"]);
     pimpl_->scale_angular_turbo_map["yaw"] = pimpl_->scale_angular_map["yaw"];
-    node->get_parameter("scale_angular_turbo", pimpl_->scale_angular_turbo_map["yaw"]);
+    this->get_parameter("scale_angular_turbo", pimpl_->scale_angular_turbo_map["yaw"]);
   }
 
   ROS_INFO_NAMED("TeleopTwistJoy", "Teleop enable button %i.", pimpl_->enable_button);
@@ -148,6 +142,11 @@ TeleopTwistJoy::TeleopTwistJoy(rclcpp::Node::SharedPtr & node)
   }
 
   pimpl_->sent_disable_msg = false;
+}
+
+TeleopTwistJoy::~TeleopTwistJoy()
+{
+  delete pimpl_;
 }
 
 void TeleopTwistJoy::Impl::joyCallback(const sensor_msgs::msg::Joy::SharedPtr joy_msg)
