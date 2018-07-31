@@ -22,13 +22,11 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCL
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "teleop_twist_joy/teleop_twist_joy.h"
-
 #include <geometry_msgs/msg/twist.hpp>
 #include <rcutils/logging_macros.h>
 #include <sensor_msgs/msg/joy.hpp>
+#include "teleop_twist_joy/teleop_twist_joy.h"
 
-#include <functional>
 #include <map>
 #include <string>
 
@@ -47,8 +45,8 @@ struct TeleopTwistJoy::Impl
 {
   void joyCallback(const sensor_msgs::msg::Joy::SharedPtr joy);
 
-  rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_pub;
   rclcpp::Subscription<sensor_msgs::msg::Joy>::SharedPtr joy_sub;
+  rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_pub;
 
   int enable_button;
   int enable_turbo_button;
@@ -69,7 +67,7 @@ struct TeleopTwistJoy::Impl
  */
 TeleopTwistJoy::TeleopTwistJoy() : Node("teleop_twist_joy_node")
 {
-  pimpl_ = new Impl();
+  pimpl_ = new Impl;
 
   pimpl_->cmd_vel_pub = this->create_publisher<geometry_msgs::msg::Twist>("cmd_vel",
     rmw_qos_profile_sensor_data);
@@ -78,7 +76,7 @@ TeleopTwistJoy::TeleopTwistJoy() : Node("teleop_twist_joy_node")
     rmw_qos_profile_sensor_data);
 
   pimpl_->enable_button = 5;
-  this->get_parameter("enable_button", pimpl_->enable_button);
+  this->get_parameter_or("enable_button", pimpl_->enable_button, 5);
 
   pimpl_->enable_turbo_button = -1;
   this->get_parameter("enable_turbo_button", pimpl_->enable_turbo_button);
@@ -151,15 +149,8 @@ TeleopTwistJoy::~TeleopTwistJoy()
 
 void TeleopTwistJoy::Impl::joyCallback(const sensor_msgs::msg::Joy::SharedPtr joy_msg)
 {
+  // Initializes with zeros by default.
   auto cmd_vel_msg = std::make_shared<geometry_msgs::msg::Twist>();
-
-  cmd_vel_msg->linear.x = 0.0;
-  cmd_vel_msg->linear.y = 0.0;
-  cmd_vel_msg->linear.z = 0.0;
-
-  cmd_vel_msg->angular.x = 0.0;
-  cmd_vel_msg->angular.y = 0.0;
-  cmd_vel_msg->angular.z = 0.0;
 
   if (enable_turbo_button >= 0 && joy_msg->buttons[enable_turbo_button])
   {
