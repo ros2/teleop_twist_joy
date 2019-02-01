@@ -51,13 +51,13 @@ struct TeleopTwistJoy::Impl
   rclcpp::Subscription<sensor_msgs::msg::Joy>::SharedPtr joy_sub;
   rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_pub;
 
-  int enable_button;
-  int enable_turbo_button;
+  int64_t enable_button;
+  int64_t enable_turbo_button;
 
-  std::map<std::string, int> axis_linear_map;
+  std::map<std::string, int64_t> axis_linear_map;
   std::map<std::string, std::map<std::string, double>> scale_linear_map;
 
-  std::map<std::string, int> axis_angular_map;
+  std::map<std::string, int64_t> axis_angular_map;
   std::map<std::string, std::map<std::string, double>> scale_angular_map;
 
   bool sent_disable_msg;
@@ -76,8 +76,8 @@ TeleopTwistJoy::TeleopTwistJoy() : Node("teleop_twist_joy_node")
     std::bind(&TeleopTwistJoy::Impl::joyCallback, this->pimpl_, std::placeholders::_1),
     rmw_qos_profile_default);
 
-  this->get_parameter_or_set("enable_button", pimpl_->enable_button, 5);
-  this->get_parameter_or_set("enable_turbo_button", pimpl_->enable_turbo_button, -1);
+  this->get_parameter_or_set("enable_button", pimpl_->enable_button, 5L);
+  this->get_parameter_or_set("enable_turbo_button", pimpl_->enable_turbo_button, -1L);
   this->get_parameters("axis_linear", pimpl_->axis_linear_map);
   if (pimpl_->axis_linear_map.count("x") == 0)
   {
@@ -119,7 +119,7 @@ TeleopTwistJoy::TeleopTwistJoy() : Node("teleop_twist_joy_node")
   ROS_INFO_COND_NAMED(pimpl_->enable_turbo_button >= 0, "TeleopTwistJoy",
     "Turbo on button %i.", pimpl_->enable_turbo_button);
 
-  for (std::map<std::string, int>::iterator it = pimpl_->axis_linear_map.begin();
+  for (std::map<std::string, int64_t>::iterator it = pimpl_->axis_linear_map.begin();
        it != pimpl_->axis_linear_map.end(); ++it)
   {
     ROS_INFO_NAMED("TeleopTwistJoy", "Linear axis %s on %i at scale %f.",
@@ -128,7 +128,7 @@ TeleopTwistJoy::TeleopTwistJoy() : Node("teleop_twist_joy_node")
       "Turbo for linear axis %s is scale %f.", it->first.c_str(), pimpl_->scale_linear_map["turbo"][it->first]);
   }
 
-  for (std::map<std::string, int>::iterator it = pimpl_->axis_angular_map.begin();
+  for (std::map<std::string, int64_t>::iterator it = pimpl_->axis_angular_map.begin();
        it != pimpl_->axis_angular_map.end(); ++it)
   {
     ROS_INFO_NAMED("TeleopTwistJoy", "Angular axis %s on %i at scale %f.",
@@ -145,7 +145,7 @@ TeleopTwistJoy::~TeleopTwistJoy()
   delete pimpl_;
 }
 
-double getVal(const sensor_msgs::msg::Joy::SharedPtr joy_msg, const std::map<std::string, int>& axis_map,
+double getVal(const sensor_msgs::msg::Joy::SharedPtr joy_msg, const std::map<std::string, int64_t>& axis_map,
               const std::map<std::string, double>& scale_map, const std::string& fieldname)
 {
   if (axis_map.find(fieldname) == axis_map.end() ||
