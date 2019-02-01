@@ -76,8 +76,8 @@ TeleopTwistJoy::TeleopTwistJoy() : Node("teleop_twist_joy_node")
     std::bind(&TeleopTwistJoy::Impl::joyCallback, this->pimpl_, std::placeholders::_1),
     rmw_qos_profile_default);
 
-  this->get_parameter_or_set("enable_button", pimpl_->enable_button, 5L);
-  this->get_parameter_or_set("enable_turbo_button", pimpl_->enable_turbo_button, -1L);
+  this->get_parameter_or_set<int64_t>("enable_button", pimpl_->enable_button, 5L);
+  this->get_parameter_or_set<int64_t>("enable_turbo_button", pimpl_->enable_turbo_button, -1L);
   this->get_parameters("axis_linear", pimpl_->axis_linear_map);
   if (pimpl_->axis_linear_map.count("x") == 0)
   {
