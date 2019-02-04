@@ -10,7 +10,7 @@
   <url type="website">http://wiki.ros.org/teleop_twist_joy</url>
   <author email="mpurvis@clearpathrobotics.com">Mike Purvis</author>
 
-  <buildtool_depend>ament_cmake_ros</buildtool_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
 
   <depend>geometry_msgs</depend>
   <depend>rclcpp</depend>
