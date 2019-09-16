@@ -75,9 +75,9 @@ TeleopTwistJoy::TeleopTwistJoy() : Node("teleop_twist_joy_node")
   pimpl_->joy_sub = this->create_subscription<sensor_msgs::msg::Joy>("joy", rclcpp::QoS(10),
     std::bind(&TeleopTwistJoy::Impl::joyCallback, this->pimpl_, std::placeholders::_1));
 
-  pimpl_->enable_button = this->declare_parameter("enable_button", 5L);
+  pimpl_->enable_button = this->declare_parameter("enable_button", 5);
 
-  pimpl_->enable_turbo_button = this->declare_parameter("enable_turbo_button", -1L);
+  pimpl_->enable_turbo_button = this->declare_parameter("enable_turbo_button", -1);
 
   std::map<std::string, int64_t> default_linear_map{
     {"x", 5L},
