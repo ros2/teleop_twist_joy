@@ -39,11 +39,11 @@ install(TARGETS ${PROJECT_NAME}
 install(TARGETS ${PROJECT_NAME}_node
   DESTINATION lib/${PROJECT_NAME})
 
-install(DIRECTORY include/${PROJECT_NAME}/
+install(DIRECTORY include/
   DESTINATION include)
 
-#install(DIRECTORY launch config
-#  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
+install(DIRECTORY launch config
+  DESTINATION share/${PROJECT_NAME})
 
 if(BUILD_TESTING)
   # Need to specify LANGUAGE because hpp extension isn't used
