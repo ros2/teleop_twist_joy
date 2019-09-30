@@ -23,12 +23,13 @@
 # WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY
 # WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import time
+import unittest
+
 import geometry_msgs.msg
 import launch_testing_ros
 import rclpy
 import sensor_msgs.msg
-import time
-import unittest
 
 
 class TestJoyTwist(unittest.TestCase):
