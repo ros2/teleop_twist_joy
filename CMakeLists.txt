@@ -55,10 +55,6 @@ if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   ament_lint_auto_find_test_dependencies()
 
-  # Need to specify LANGUAGE because hpp extension isn't used
-  find_package(ament_cmake_cppcheck REQUIRED)
-  ament_cppcheck(TESTNAME explicit_cppcheck LANGUAGE c++ include src)
-
   set(_teleop_twist_joy_launch_tests
     # Check axes and scaling.
     test/differential_joy_launch_test.py
