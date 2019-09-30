@@ -29,7 +29,7 @@ def generate_test_description(ready_fn):
     )
 
 
-class SixDofJoy(test_joy_twist.TestJoyTwist):
+class NoEnableJoy(test_joy_twist.TestJoyTwist):
 
     def setUp(self):
         super().setUp()

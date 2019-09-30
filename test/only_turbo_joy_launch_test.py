@@ -31,7 +31,7 @@ def generate_test_description(ready_fn):
     )
 
 
-class DifferentialJoy(test_joy_twist.TestJoyTwist):
+class OnlyTurboJoy(test_joy_twist.TestJoyTwist):
 
     def setUp(self):
         super().setUp()
