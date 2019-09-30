@@ -58,20 +58,26 @@ if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   ament_lint_auto_find_test_dependencies()
 
-  # find_package(rostest REQUIRED)
-  # include_directories(include ${catkin_INCLUDE_DIRS})
+  set(_teleop_twist_joy_launch_tests
+    # Check axes and scaling.
+    test/differential_joy_launch_test.py
+    test/holonomic_joy_launch_test.py
+    test/six_dof_joy_launch_test.py
 
-  # # Check axes and scaling.
-  # add_rostest(test/differential_joy.test)
-  # add_rostest(test/holonomic_joy.test)
-  # add_rostest(test/six_dof_joy.test)
+    # Check enable and turbo button logic.
+    test/no_enable_joy_launch_test.py
+    # test/turbo_enable_joy_launch_test.py
+    # test/only_turbo_joy_launch_test.py
+    test/turbo_angular_enable_joy_launch_test.py
+  )
 
-  # # Check enable and turbo button logic.
-  # add_rostest(test/no_enable_joy.test)
-  # add_rostest(test/turbo_enable_joy.test)
-  # add_rostest(test/only_turbo_joy.test)
-  # add_rostest(test/turbo_angular_enable_joy.test)
-  # add_rostest(test/turbo_angular_enable_joy_with_rosparam_map.test)
+  find_package(launch_testing_ament_cmake REQUIRED)
+  foreach(_test_path ${_teleop_twist_joy_launch_tests})
+    add_launch_test(${_test_path}
+      APPEND_ENV PYTHONPATH=${CMAKE_CURRENT_SOURCE_DIR}/test
+      TIMEOUT 10
+    )
+  endforeach()
 endif()
 
 ament_export_include_directories(include)
