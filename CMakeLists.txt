@@ -46,18 +46,18 @@ install(DIRECTORY launch config
   DESTINATION share/${PROJECT_NAME})
 
 if(BUILD_TESTING)
-  # Need to specify LANGUAGE because hpp extension isn't used
-  find_package(ament_cmake_cppcheck REQUIRED)
-  ament_cppcheck(TESTNAME explicit_cppcheck LANGUAGE c++ include src)
-  set(ament_cmake_cppcheck_FOUND TRUE)
-
   # Disable some broken tests for now
   set(ament_cmake_copyright_FOUND TRUE)
+  set(ament_cmake_cppcheck_FOUND TRUE)
   set(ament_cmake_cpplint_FOUND TRUE)
   set(ament_cmake_uncrustify_FOUND TRUE)
 
   find_package(ament_lint_auto REQUIRED)
   ament_lint_auto_find_test_dependencies()
+
+  # Need to specify LANGUAGE because hpp extension isn't used
+  find_package(ament_cmake_cppcheck REQUIRED)
+  ament_cppcheck(TESTNAME explicit_cppcheck LANGUAGE c++ include src)
 
   set(_teleop_twist_joy_launch_tests
     # Check axes and scaling.
