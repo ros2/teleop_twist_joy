@@ -66,8 +66,8 @@ if(BUILD_TESTING)
 
     # Check enable and turbo button logic.
     test/no_enable_joy_launch_test.py
-    # test/turbo_enable_joy_launch_test.py
-    # test/only_turbo_joy_launch_test.py
+    test/turbo_enable_joy_launch_test.py
+    test/only_turbo_joy_launch_test.py
     test/turbo_angular_enable_joy_launch_test.py
   )
 

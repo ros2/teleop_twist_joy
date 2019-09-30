@@ -38,4 +38,4 @@ class DifferentialJoy(test_joy_twist.TestJoyTwist):
         self.joy_msg['axes'] = [0.3, 0.4]
         self.joy_msg['buttons'] = [1, 1]
         self.expect_cmd_vel['linear']['x'] = 0.8
-        self.expect_cmd_vel['angular']['z'] = 0.9
+        self.expect_cmd_vel['angular']['z'] = 0.3
