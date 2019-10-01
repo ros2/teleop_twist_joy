@@ -22,16 +22,17 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCL
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <geometry_msgs/msg/twist.hpp>
-#include <rcutils/logging_macros.h>
-#include <sensor_msgs/msg/joy.hpp>
-#include "teleop_twist_joy/teleop_twist_joy.h"
-
 #include <cinttypes>
 #include <functional>
 #include <map>
 #include <memory>
 #include <string>
+
+#include <geometry_msgs/msg/twist.hpp>
+#include <rcutils/logging_macros.h>
+#include <sensor_msgs/msg/joy.hpp>
+
+#include "teleop_twist_joy/teleop_twist_joy.hpp"
 
 #define ROS_INFO_NAMED RCUTILS_LOG_INFO_NAMED
 #define ROS_INFO_COND_NAMED RCUTILS_LOG_INFO_EXPRESSION_NAMED
