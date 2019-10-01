@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # Software License Agreement (BSD)
 #
 # @author    Tony Baltovski <tbaltovski@clearpathrobotics.com>
@@ -93,7 +92,3 @@ class TestJoyTwist(unittest.TestCase):
     def callback(self, msg):
         self.received_cmd_vel = geometry_msgs.msg.Twist()
         self.received_cmd_vel = msg
-
-
-if __name__ == '__main__':
-    unittest.main()
