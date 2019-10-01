@@ -36,7 +36,7 @@ namespace teleop_twist_joy
 class TeleopTwistJoy : public rclcpp::Node
 {
 public:
-  TeleopTwistJoy();
+  explicit TeleopTwistJoy(const rclcpp::NodeOptions& options);
 
   virtual ~TeleopTwistJoy();
 

@@ -14,17 +14,22 @@ find_package(ament_cmake REQUIRED)
 
 find_package(geometry_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(rclcpp_components REQUIRED)
 find_package(sensor_msgs REQUIRED)
 
 include_directories(include)
 
-add_library(${PROJECT_NAME} src/${PROJECT_NAME})
+add_library(${PROJECT_NAME} SHARED src/${PROJECT_NAME})
 
 ament_target_dependencies(${PROJECT_NAME}
   "geometry_msgs"
   "rclcpp"
+  "rclcpp_components"
   "sensor_msgs"
 )
+
+rclcpp_components_register_nodes(${PROJECT_NAME}
+  "teleop_twist_joy::TeleopTwistJoy")
 
 add_executable(${PROJECT_NAME}_node src/teleop_node.cpp)
 target_link_libraries(${PROJECT_NAME}_node ${PROJECT_NAME})

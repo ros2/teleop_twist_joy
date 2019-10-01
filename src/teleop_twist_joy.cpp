@@ -29,6 +29,8 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 #include <string>
 
 #include <geometry_msgs/msg/twist.hpp>
+#include <rclcpp/rclcpp.hpp>
+#include <rclcpp_components/register_node_macro.hpp>
 #include <rcutils/logging_macros.h>
 #include <sensor_msgs/msg/joy.hpp>
 
@@ -68,7 +70,7 @@ struct TeleopTwistJoy::Impl
 /**
  * Constructs TeleopTwistJoy.
  */
-TeleopTwistJoy::TeleopTwistJoy() : Node("teleop_twist_joy_node")
+TeleopTwistJoy::TeleopTwistJoy(const rclcpp::NodeOptions& options) : Node("teleop_twist_joy_node", options)
 {
   pimpl_ = new Impl;
 
@@ -217,3 +219,5 @@ void TeleopTwistJoy::Impl::joyCallback(const sensor_msgs::msg::Joy::SharedPtr jo
 }
 
 }  // namespace teleop_twist_joy
+
+RCLCPP_COMPONENTS_REGISTER_NODE(teleop_twist_joy::TeleopTwistJoy)
