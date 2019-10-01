@@ -17,7 +17,8 @@ def generate_test_description(ready_fn):
             'axis_angular.yaw': 0,
             'scale_linear.x': 1.0,
             'scale_linear_turbo.x': 2.0,
-            'scale_angular.yaw': 3.0,
+            'scale_angular.yaw': 1.0,
+            'scale_angular_turbo.yaw': 3.0,
             'enable_button': 0,
             'enable_turbo_button': 1,
         }],
@@ -38,4 +39,4 @@ class OnlyTurboJoy(test_joy_twist.TestJoyTwist):
         self.joy_msg['axes'] = [0.3, 0.4]
         self.joy_msg['buttons'] = [0, 1]
         self.expect_cmd_vel['linear']['x'] = 0.8
-        self.expect_cmd_vel['angular']['z'] = 0.3
+        self.expect_cmd_vel['angular']['z'] = 0.9
