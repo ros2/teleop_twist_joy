@@ -153,6 +153,114 @@ TeleopTwistJoy::TeleopTwistJoy(const rclcpp::NodeOptions& options) : Node("teleo
   }
 
   pimpl_->sent_disable_msg = false;
+
+  auto param_callback = 
+  [this](std::vector<rclcpp::Parameter> parameters)
+  {
+    auto result = rcl_interfaces::msg::SetParametersResult();
+    result.successful = true;
+
+    // Loop to check if changed parameters are of expected data type
+    for(const auto & parameter : parameters)
+    {
+      /// If parameter is axis_linear, axis_angular, enable_button or enable_turbo_button
+      if (
+        (parameter.get_name().find("axis") != std::string::npos) ||
+        (parameter.get_name().find("enable") != std::string::npos)
+      )
+      {
+        if (parameter.get_type() != rclcpp::ParameterType::PARAMETER_INTEGER)
+        {
+          RCLCPP_ERROR(this->get_logger(),"Only integer values can be set for \"%s\". "
+          "You entered type: %s. Rejecting change...",
+          parameter.get_name().c_str(),
+          parameter.get_type_name().c_str());
+          result.successful = false;
+          return result;
+        }        
+      }
+      else
+      {
+        if (parameter.get_type() != rclcpp::ParameterType::PARAMETER_DOUBLE)
+        {
+          RCLCPP_ERROR(this->get_logger(),"Only double values can be set for \"%s\". "
+          "You entered type: %s. Rejecting change...",
+          parameter.get_name().c_str(),
+          parameter.get_type_name().c_str());
+          result.successful = false;
+          return result;
+        }
+      }
+    }
+
+    // If result.successful is true
+    std::string prefix;
+
+    // Loop to assign changed parameters to the member variables
+    for (const auto & parameter : parameters)
+    {        
+      // If parameter is axis_linear.x, axis_linear.y or axis_linear.z 
+      if (parameter.get_name().find("axis_linear") != std::string::npos)
+      {
+        prefix = "axis_linear";
+        this->pimpl_->axis_linear_map[parameter.get_name().substr(prefix.size()+1)]
+        = parameter.get_value<rclcpp::PARAMETER_INTEGER>();
+      }
+      // If parameter is axis_angular.roll, axis_angular.pitch or axis_angular.yaw
+      else if (
+        parameter.get_name().find("axis_angular") != std::string::npos)
+      {
+        prefix = "axis_angular";
+        this->pimpl_->axis_angular_map[parameter.get_name().substr(prefix.size()+1)] 
+        = parameter.get_value<rclcpp::PARAMETER_INTEGER>();
+      }
+      else if (
+        parameter.get_name().find("enable_button") != std::string::npos)
+        {          
+        this->pimpl_->enable_button = parameter.get_value<rclcpp::PARAMETER_INTEGER>();
+        }
+
+      else if (
+        parameter.get_name().find("enable_turbo_button") != std::string::npos)
+        this->pimpl_->enable_turbo_button = parameter.get_value<rclcpp::PARAMETER_INTEGER>();
+
+      else if(
+        parameter.get_name().find("scale_linear") != std::string::npos)
+        {
+          if (parameter.get_name().find("turbo") != std::string::npos)
+          {
+            prefix = "scale_linear_turbo";
+            this->pimpl_->scale_linear_map["turbo"][parameter.get_name().substr(prefix.size()+1)]
+            = parameter.get_value<rclcpp::PARAMETER_DOUBLE>();
+          }
+          else
+          {
+            prefix = "scale_linear";
+            this->pimpl_->scale_linear_map["normal"][parameter.get_name().substr(prefix.size()+1)]
+            = parameter.get_value<rclcpp::PARAMETER_DOUBLE>();
+          }
+        }
+
+      else // scale_angular
+      {
+        if (parameter.get_name().find("turbo") != std::string::npos)
+        {
+          prefix = "scale_angular_turbo";
+          this->pimpl_->scale_angular_map["turbo"][parameter.get_name().substr(prefix.size()+1)] 
+          = parameter.get_value<rclcpp::PARAMETER_DOUBLE>();
+        }
+        else
+        {
+          prefix = "scale_angular";
+          this->pimpl_->scale_angular_map["normal"][parameter.get_name().substr(prefix.size()+1)] 
+          = parameter.get_value<rclcpp::PARAMETER_DOUBLE>();
+        }
+      }
+    }
+    return result;
+  }; // End of lambda function
+
+  callback_handle = this->add_on_set_parameters_callback(param_callback);
 }
 
 TeleopTwistJoy::~TeleopTwistJoy()
