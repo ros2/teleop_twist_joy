@@ -26,6 +26,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 #include <functional>
 #include <map>
 #include <memory>
+#include <set>
 #include <string>
 
 #include <geometry_msgs/msg/twist.hpp>
@@ -154,111 +155,130 @@ TeleopTwistJoy::TeleopTwistJoy(const rclcpp::NodeOptions& options) : Node("teleo
 
   pimpl_->sent_disable_msg = false;
 
-  auto param_callback = 
+  auto param_callback =
   [this](std::vector<rclcpp::Parameter> parameters)
   {
+    static std::set<std::string> intparams = {"axis_linear.x", "axis_linear.y", "axis_linear.z",
+                                              "axis_angular.yaw", "axis_angular.pitch", "axis_angular.roll",
+                                              "enable_button", "enable_turbo_button"};
+    static std::set<std::string> doubleparams = {"scale_linear.x", "scale_linear.y", "scale_linear.z",
+                                                 "scale_linear_turbo.x", "scale_linear_turbo.y", "scale_linear_turbo.z",
+                                                 "scale_angular.yaw", "scale_angular.pitch", "scale_angular.roll",
+                                                 "scale_angular_turbo.yaw", "scale_angular_turbo.pitch", "scale_angular_turbo.roll"};
     auto result = rcl_interfaces::msg::SetParametersResult();
     result.successful = true;
 
     // Loop to check if changed parameters are of expected data type
     for(const auto & parameter : parameters)
     {
-      /// If parameter is axis_linear, axis_angular, enable_button or enable_turbo_button
-      if (
-        (parameter.get_name().find("axis") != std::string::npos) ||
-        (parameter.get_name().find("enable") != std::string::npos)
-      )
+      if (intparams.count(parameter.get_name()) == 1)
       {
         if (parameter.get_type() != rclcpp::ParameterType::PARAMETER_INTEGER)
         {
-          RCLCPP_ERROR(this->get_logger(),"Only integer values can be set for \"%s\". "
-          "You entered type: %s. Rejecting change...",
-          parameter.get_name().c_str(),
-          parameter.get_type_name().c_str());
+          RCLCPP_ERROR(this->get_logger(),"Only integer values can be set for \"%s\". ",
+                       parameter.get_name().c_str());
           result.successful = false;
           return result;
-        }        
+        }
       }
-      else
+      else if (doubleparams.count(parameter.get_name()) == 1)
       {
         if (parameter.get_type() != rclcpp::ParameterType::PARAMETER_DOUBLE)
         {
-          RCLCPP_ERROR(this->get_logger(),"Only double values can be set for \"%s\". "
-          "You entered type: %s. Rejecting change...",
-          parameter.get_name().c_str(),
-          parameter.get_type_name().c_str());
+          RCLCPP_ERROR(this->get_logger(),"Only double values can be set for \"%s\". ",
+                       parameter.get_name().c_str());
           result.successful = false;
           return result;
         }
       }
     }
 
-    // If result.successful is true
-    std::string prefix;
-
     // Loop to assign changed parameters to the member variables
     for (const auto & parameter : parameters)
-    {        
-      // If parameter is axis_linear.x, axis_linear.y or axis_linear.z 
-      if (parameter.get_name().find("axis_linear") != std::string::npos)
+    {
+      if (parameter.get_name() == "enable_button")
       {
-        prefix = "axis_linear";
-        this->pimpl_->axis_linear_map[parameter.get_name().substr(prefix.size()+1)]
-        = parameter.get_value<rclcpp::PARAMETER_INTEGER>();
-      }
-      // If parameter is axis_angular.roll, axis_angular.pitch or axis_angular.yaw
-      else if (
-        parameter.get_name().find("axis_angular") != std::string::npos)
-      {
-        prefix = "axis_angular";
-        this->pimpl_->axis_angular_map[parameter.get_name().substr(prefix.size()+1)] 
-        = parameter.get_value<rclcpp::PARAMETER_INTEGER>();
-      }
-      else if (
-        parameter.get_name().find("enable_button") != std::string::npos)
-        {          
         this->pimpl_->enable_button = parameter.get_value<rclcpp::PARAMETER_INTEGER>();
-        }
-
-      else if (
-        parameter.get_name().find("enable_turbo_button") != std::string::npos)
-        this->pimpl_->enable_turbo_button = parameter.get_value<rclcpp::PARAMETER_INTEGER>();
-
-      else if(
-        parameter.get_name().find("scale_linear") != std::string::npos)
-        {
-          if (parameter.get_name().find("turbo") != std::string::npos)
-          {
-            prefix = "scale_linear_turbo";
-            this->pimpl_->scale_linear_map["turbo"][parameter.get_name().substr(prefix.size()+1)]
-            = parameter.get_value<rclcpp::PARAMETER_DOUBLE>();
-          }
-          else
-          {
-            prefix = "scale_linear";
-            this->pimpl_->scale_linear_map["normal"][parameter.get_name().substr(prefix.size()+1)]
-            = parameter.get_value<rclcpp::PARAMETER_DOUBLE>();
-          }
-        }
-
-      else // scale_angular
+      }
+      else if (parameter.get_name() == "enable_turbo_button")
       {
-        if (parameter.get_name().find("turbo") != std::string::npos)
-        {
-          prefix = "scale_angular_turbo";
-          this->pimpl_->scale_angular_map["turbo"][parameter.get_name().substr(prefix.size()+1)] 
-          = parameter.get_value<rclcpp::PARAMETER_DOUBLE>();
-        }
-        else
-        {
-          prefix = "scale_angular";
-          this->pimpl_->scale_angular_map["normal"][parameter.get_name().substr(prefix.size()+1)] 
-          = parameter.get_value<rclcpp::PARAMETER_DOUBLE>();
-        }
+        this->pimpl_->enable_turbo_button = parameter.get_value<rclcpp::PARAMETER_INTEGER>();
+      }
+      else if (parameter.get_name() == "axis_linear.x")
+      {
+        this->pimpl_->axis_linear_map["x"] = parameter.get_value<rclcpp::PARAMETER_INTEGER>();
+      }
+      else if (parameter.get_name() == "axis_linear.y")
+      {
+        this->pimpl_->axis_linear_map["y"] = parameter.get_value<rclcpp::PARAMETER_INTEGER>();
+      }
+      else if (parameter.get_name() == "axis_linear.z")
+      {
+        this->pimpl_->axis_linear_map["z"] = parameter.get_value<rclcpp::PARAMETER_INTEGER>();
+      }
+      else if (parameter.get_name() == "axis_angular.yaw")
+      {
+        this->pimpl_->axis_angular_map["yaw"] = parameter.get_value<rclcpp::PARAMETER_INTEGER>();
+      }
+      else if (parameter.get_name() == "axis_angular.pitch")
+      {
+        this->pimpl_->axis_angular_map["pitch"] = parameter.get_value<rclcpp::PARAMETER_INTEGER>();
+      }
+      else if (parameter.get_name() == "axis_angular.roll")
+      {
+        this->pimpl_->axis_angular_map["roll"] = parameter.get_value<rclcpp::PARAMETER_INTEGER>();
+      }
+      else if (parameter.get_name() == "scale_linear_turbo.x")
+      {
+        this->pimpl_->scale_linear_map["turbo"]["x"] = parameter.get_value<rclcpp::PARAMETER_DOUBLE>();
+      }
+      else if (parameter.get_name() == "scale_linear_turbo.y")
+      {
+        this->pimpl_->scale_linear_map["turbo"]["y"] = parameter.get_value<rclcpp::PARAMETER_DOUBLE>();
+      }
+      else if (parameter.get_name() == "scale_linear_turbo.z")
+      {
+        this->pimpl_->scale_linear_map["turbo"]["z"] = parameter.get_value<rclcpp::PARAMETER_DOUBLE>();
+      }
+      else if (parameter.get_name() == "scale_linear.x")
+      {
+        this->pimpl_->scale_linear_map["normal"]["x"] = parameter.get_value<rclcpp::PARAMETER_DOUBLE>();
+      }
+      else if (parameter.get_name() == "scale_linear.y")
+      {
+        this->pimpl_->scale_linear_map["normal"]["y"] = parameter.get_value<rclcpp::PARAMETER_DOUBLE>();
+      }
+      else if (parameter.get_name() == "scale_linear.z")
+      {
+        this->pimpl_->scale_linear_map["normal"]["z"] = parameter.get_value<rclcpp::PARAMETER_DOUBLE>();
+      }
+      else if (parameter.get_name() == "scale_angular_turbo.yaw")
+      {
+        this->pimpl_->scale_angular_map["turbo"]["yaw"] = parameter.get_value<rclcpp::PARAMETER_DOUBLE>();
+      }
+      else if (parameter.get_name() == "scale_angular_turbo.pitch")
+      {
+        this->pimpl_->scale_angular_map["turbo"]["pitch"] = parameter.get_value<rclcpp::PARAMETER_DOUBLE>();
+      }
+      else if (parameter.get_name() == "scale_angular_turbo.roll")
+      {
+        this->pimpl_->scale_angular_map["turbo"]["roll"] = parameter.get_value<rclcpp::PARAMETER_DOUBLE>();
+      }
+      else if (parameter.get_name() == "scale_angular.yaw")
+      {
+        this->pimpl_->scale_angular_map["normal"]["yaw"] = parameter.get_value<rclcpp::PARAMETER_DOUBLE>();
+      }
+      else if (parameter.get_name() == "scale_angular.pitch")
+      {
+        this->pimpl_->scale_angular_map["normal"]["pitch"] = parameter.get_value<rclcpp::PARAMETER_DOUBLE>();
+      }
+      else if (parameter.get_name() == "scale_angular.roll")
+      {
+        this->pimpl_->scale_angular_map["normal"]["roll"] = parameter.get_value<rclcpp::PARAMETER_DOUBLE>();
       }
     }
     return result;
-  }; // End of lambda function
+  };
 
   callback_handle = this->add_on_set_parameters_callback(param_callback);
 }
