@@ -175,8 +175,8 @@ TeleopTwistJoy::TeleopTwistJoy(const rclcpp::NodeOptions& options) : Node("teleo
       {
         if (parameter.get_type() != rclcpp::ParameterType::PARAMETER_INTEGER)
         {
-          RCLCPP_ERROR(this->get_logger(),"Only integer values can be set for \"%s\". ",
-                       parameter.get_name().c_str());
+          result.reason = "Only integer values can be set for '" + parameter.get_name() + "'.";
+          RCLCPP_WARN(this->get_logger(), result.reason.c_str());
           result.successful = false;
           return result;
         }
@@ -185,8 +185,8 @@ TeleopTwistJoy::TeleopTwistJoy(const rclcpp::NodeOptions& options) : Node("teleo
       {
         if (parameter.get_type() != rclcpp::ParameterType::PARAMETER_DOUBLE)
         {
-          RCLCPP_ERROR(this->get_logger(),"Only double values can be set for \"%s\". ",
-                       parameter.get_name().c_str());
+          result.reason = "Only double values can be set for '" + parameter.get_name() + "'.";
+          RCLCPP_WARN(this->get_logger(), result.reason.c_str());
           result.successful = false;
           return result;
         }
