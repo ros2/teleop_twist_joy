@@ -51,7 +51,7 @@ For most users building from source will not be required, execute `apt-get insta
 ## Run
 A launch file has been provided which has three arguments which can be changed in the terminal or via your own launch file.
 To configure the node to match your joystick a config file can be used. 
-There are several common ones provided in this package (atk3, ps3-holonomic, ps3, xbox, xd3).
+There are several common ones provided in this package (atk3, ps3-holonomic, ps3, xbox, xd3), or you can create your own and locate it here `/opt/ros/foxy/share/teleop_twist_joy/config`.
 
 PS3 is default, to run for another config (e.g. xbox) use this:
 ````
