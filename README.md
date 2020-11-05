@@ -2,7 +2,8 @@ ros2/teleop_twist_joy [![Build Status](https://travis-ci.org/ros-teleop/teleop_t
 ================
 
 # Overview
-The purpose of this package is to provide a generic facility for tele-operating Twist-based ROS robots with a standard joystick. Examples of such platforms include [TurtleBot](http://wiki.ros.org/Robots/TurtleBot), [Husky](http://wiki.ros.org/Robots/Husky), and [Kingfisher](http://wiki.ros.org/Robots/Kingfisher).
+The purpose of this package is to provide a generic facility for tele-operating Twist-based ROS2 robots with a standard joystick. 
+It converts joy messages to velocity commands.
 
 This node provides no rate limiting or autorepeat functionality. It is expected that you take advantage of the features built into [joy](https://index.ros.org/p/joy/github-ros-drivers-joystick_drivers/#foxy) for this.
 
@@ -11,7 +12,6 @@ For most users building from source will not be required, execute `apt-get insta
 
 ## Executables
 The package comes with a node, `teleop_node`, which may be used out of the box, this republishes Joy messages as scaled geometry_msgs/Twist messages.
-
 
 ## Subscribed Topics
 joy (sensor_msgs/Joy)
@@ -48,3 +48,16 @@ Command velocity messages arising from Joystick commands.
 
 - `use_sim_time` _TODO:add details_
 
+# Usage
+A launch file has been provided which has three arguments which can be changed in the terminal or via your own launch file.
+To configure the node to match your joystick a config file musst be used. 
+There are several common ones provided in this package (atk3, ps3-holonomic, ps3, xbox, xd3).
+
+
+## Arguments
+- `joy_config (string, default: 'ps3')`
+  - Config file to use
+- `joy_dev (string, default: 'dev/input/js0)`
+  - Joystick device to use
+- `config_filepath (string, default: '/opt/ros/foxy/share/teleop_twist_joy/config/' + LaunchConfig('joy_config') + '.config.yaml')
+  - Path to config files
