@@ -8,15 +8,15 @@ It converts joy messages to velocity commands.
 This node provides no rate limiting or autorepeat functionality. It is expected that you take advantage of the features built into [joy](https://index.ros.org/p/joy/github-ros-drivers-joystick_drivers/#foxy) for this.
 
 ## Executables
-The package comes with a node, `teleop_node`, which may be used out of the box, this republishes Joy messages as scaled geometry_msgs/Twist messages.
+The package comes with a node, `teleop_node`, which may be used out of the box, this republishes sensor_msgs/Joy messages as scaled geometry_msgs/Twist messages.
 
 ## Subscribed Topics
-joy (sensor_msgs/Joy)
-Joystick messages to be translated to velocity commands.
+- `joy (sensor_msgs/Joy)`
+  - Joystick messages to be translated to velocity commands.
 
 ## Published Topics
-cmd_vel (geometry_msgs/Twist)
-Command velocity messages arising from Joystick commands.
+- `cmd_vel (geometry_msgs/Twist)`
+  - Command velocity messages arising from Joystick commands.
 
 ## Parameters
 - `axis_angular (int, default: 0)`
