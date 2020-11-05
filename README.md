@@ -50,8 +50,15 @@ Command velocity messages arising from Joystick commands.
 
 # Usage
 A launch file has been provided which has three arguments which can be changed in the terminal or via your own launch file.
-To configure the node to match your joystick a config file musst be used. 
+To configure the node to match your joystick a config file must be used. 
 There are several common ones provided in this package (atk3, ps3-holonomic, ps3, xbox, xd3).
+
+PS3 is default, to run for another config (e.g. xbox) use this:
+````
+ros2 launch teleop_twist_joy teleop-launch.py joy_config:='xbox'
+````
+
+__Note:__ this launch file also lanuches the `joy` node so do not do this separately.
 
 
 ## Arguments
@@ -59,5 +66,5 @@ There are several common ones provided in this package (atk3, ps3-holonomic, ps3
   - Config file to use
 - `joy_dev (string, default: 'dev/input/js0)`
   - Joystick device to use
-- `config_filepath (string, default: '/opt/ros/foxy/share/teleop_twist_joy/config/' + LaunchConfig('joy_config') + '.config.yaml')
+- `config_filepath (string, default: '/opt/ros/foxy/share/teleop_twist_joy/config/' + LaunchConfig('joy_config') + '.config.yaml')`
   - Path to config files
