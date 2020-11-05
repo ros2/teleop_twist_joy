@@ -22,29 +22,29 @@ cmd_vel (geometry_msgs/Twist)
 Command velocity messages arising from Joystick commands.
 
 ## Parameters
-- axis_angular (int, default: 0)
+- `axis_angular (int, default: 0)`
   - Joystick axis to use for angular movement control.
   
-- axis_linear (int, default: 1)
+- `axis_linear (int, default: 1)`
   - Joystick axis to use for linear movement control.
   
-- enable_button (int, default: 0)
+- `enable_button (int, default: 0)`
   - Joystick button to enable regular-speed movement.
   
-- enable_turbo_button (int, default: -1)
+- `enable_turbo_button (int, default: -1)`
   - Joystick button to enable high-speed movement (disabled when -1).
   
-- scale_angular (double, default: 1.0)
+- `scale_angular (double, default: 1.0)`
   - Scale to apply to joystick angular axis.
   
-- scale_angluar_turbo (double, default: 1.0)
+- `scale_angluar_turbo (double, default: 1.0)`
     - Scale to apply to joystick angular axis for high-speed movement.
     
-- scale_linear (double, default: 0.5)
+- `scale_linear (double, default: 0.5)`
   - Scale to apply to joystick linear axis for regular-speed movement.
   
-- scale_linear_turbo (double, default: 1.0)
+- `scale_linear_turbo (double, default: 1.0)`
   - Scale to apply to joystick linear axis for high-speed movement.
 
-- use_sim_time _TODO:add details_
+- `use_sim_time` _TODO:add details_
 
