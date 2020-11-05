@@ -7,9 +7,6 @@ It converts joy messages to velocity commands.
 
 This node provides no rate limiting or autorepeat functionality. It is expected that you take advantage of the features built into [joy](https://index.ros.org/p/joy/github-ros-drivers-joystick_drivers/#foxy) for this.
 
-## Install
-For most users building from source will not be required, execute `apt-get install ros-foxy-teleop-twist-joy` to install.
-
 ## Executables
 The package comes with a node, `teleop_node`, which may be used out of the box, this republishes Joy messages as scaled geometry_msgs/Twist messages.
 
@@ -46,11 +43,14 @@ Command velocity messages arising from Joystick commands.
 - `scale_linear_turbo (double, default: 1.0)`
   - Scale to apply to joystick linear axis for high-speed movement.
 
-- `use_sim_time` _TODO:add details_
-
 # Usage
+
+## Install
+For most users building from source will not be required, execute `apt-get install ros-foxy-teleop-twist-joy` to install.
+
+## Run
 A launch file has been provided which has three arguments which can be changed in the terminal or via your own launch file.
-To configure the node to match your joystick a config file must be used. 
+To configure the node to match your joystick a config file can be used. 
 There are several common ones provided in this package (atk3, ps3-holonomic, ps3, xbox, xd3).
 
 PS3 is default, to run for another config (e.g. xbox) use this:
@@ -58,7 +58,7 @@ PS3 is default, to run for another config (e.g. xbox) use this:
 ros2 launch teleop_twist_joy teleop-launch.py joy_config:='xbox'
 ````
 
-__Note:__ this launch file also lanuches the `joy` node so do not do this separately.
+__Note:__ this launch file also lanuches the `joy` node so do not do this separately and edit the launch file if you need different parameters.
 
 
 ## Arguments
