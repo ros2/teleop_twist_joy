@@ -11,7 +11,7 @@ import test_joy_twist
 def generate_test_description(ready_fn):
     teleop_node = launch_ros.actions.Node(
         package='teleop_twist_joy',
-        node_executable='teleop_node',
+        executable='teleop_node',
         parameters=[{
             'axis_linear.x': 1,
             'axis_linear.y': 2,
