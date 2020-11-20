@@ -25,6 +25,9 @@ The package comes with the `teleop_node` that republishes `sensor_msgs/msg/Joy` 
 - `axis_linear (int, default: 1)`
   - Joystick axis to use for linear movement control.
   
+- `require_enable_button (bool, default: true)`
+  - Whether to require the enable button for enabling movement.
+
 - `enable_button (int, default: 0)`
   - Joystick button to enable regular-speed movement.
   
