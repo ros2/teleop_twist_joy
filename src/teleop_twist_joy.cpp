@@ -56,6 +56,7 @@ struct TeleopTwistJoy::Impl
   rclcpp::Subscription<sensor_msgs::msg::Joy>::SharedPtr joy_sub;
   rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_pub;
 
+  bool require_enable_button;
   int64_t enable_button;
   int64_t enable_turbo_button;
 
@@ -78,6 +79,8 @@ TeleopTwistJoy::TeleopTwistJoy(const rclcpp::NodeOptions& options) : Node("teleo
   pimpl_->cmd_vel_pub = this->create_publisher<geometry_msgs::msg::Twist>("cmd_vel", 10);
   pimpl_->joy_sub = this->create_subscription<sensor_msgs::msg::Joy>("joy", rclcpp::QoS(10),
     std::bind(&TeleopTwistJoy::Impl::joyCallback, this->pimpl_, std::placeholders::_1));
+
+  pimpl_->require_enable_button = this->declare_parameter("require_enable_button", true);
 
   pimpl_->enable_button = this->declare_parameter("enable_button", 5);
 
@@ -131,7 +134,8 @@ TeleopTwistJoy::TeleopTwistJoy(const rclcpp::NodeOptions& options) : Node("teleo
   this->declare_parameters("scale_angular_turbo", default_scale_angular_turbo_map);
   this->get_parameters("scale_angular_turbo", pimpl_->scale_angular_map["turbo"]);
 
-  ROS_INFO_NAMED("TeleopTwistJoy", "Teleop enable button %" PRId64 ".", pimpl_->enable_button);
+  ROS_INFO_COND_NAMED(pimpl_->require_enable_button, "TeleopTwistJoy", 
+      "Teleop enable button %" PRId64 ".", pimpl_->enable_button);
   ROS_INFO_COND_NAMED(pimpl_->enable_turbo_button >= 0, "TeleopTwistJoy",
     "Turbo on button %" PRId64 ".", pimpl_->enable_turbo_button);
 
@@ -165,6 +169,7 @@ TeleopTwistJoy::TeleopTwistJoy(const rclcpp::NodeOptions& options) : Node("teleo
                                                  "scale_linear_turbo.x", "scale_linear_turbo.y", "scale_linear_turbo.z",
                                                  "scale_angular.yaw", "scale_angular.pitch", "scale_angular.roll",
                                                  "scale_angular_turbo.yaw", "scale_angular_turbo.pitch", "scale_angular_turbo.roll"};
+    static std::set<std::string> boolparams = {"require_enable_button"};
     auto result = rcl_interfaces::msg::SetParametersResult();
     result.successful = true;
 
@@ -191,11 +196,25 @@ TeleopTwistJoy::TeleopTwistJoy(const rclcpp::NodeOptions& options) : Node("teleo
           return result;
         }
       }
+      else if (boolparams.count(parameter.get_name()) == 1)
+      {
+        if (parameter.get_type() != rclcpp::ParameterType::PARAMETER_BOOL)
+        {
+          result.reason = "Only boolean values can be set for '" + parameter.get_name() + "'.";
+          RCLCPP_WARN(this->get_logger(), result.reason.c_str());
+          result.successful = false;
+          return result;
+        }
+      }
     }
 
     // Loop to assign changed parameters to the member variables
     for (const auto & parameter : parameters)
     {
+      if (parameter.get_name() == "require_enable_button")
+      {
+        this->pimpl_->require_enable_button = parameter.get_value<rclcpp::PARAMETER_BOOL>();
+      }
       if (parameter.get_name() == "enable_button")
       {
         this->pimpl_->enable_button = parameter.get_value<rclcpp::PARAMETER_INTEGER>();
@@ -327,8 +346,9 @@ void TeleopTwistJoy::Impl::joyCallback(const sensor_msgs::msg::Joy::SharedPtr jo
   {
     sendCmdVelMsg(joy_msg, "turbo");
   }
-  else if (static_cast<int>(joy_msg->buttons.size()) > enable_button &&
-           joy_msg->buttons[enable_button])
+  else if (!require_enable_button ||
+	   (static_cast<int>(joy_msg->buttons.size()) > enable_button &&
+           joy_msg->buttons[enable_button]))
   {
     sendCmdVelMsg(joy_msg, "normal");
   }
