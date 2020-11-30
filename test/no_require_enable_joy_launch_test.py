@@ -18,7 +18,7 @@ def generate_test_description():
             'scale_linear.x': 2.0,
             'scale_angular.yaw': 3.0,
             'enable_button': 0,
-            'require_enable_button': True
+            'require_enable_button': False,
         }],
     )
 
@@ -28,9 +28,11 @@ def generate_test_description():
         ]), locals()
 
 
-class NoEnableJoy(test_joy_twist.TestJoyTwist):
+class NoRequireEnableJoy(test_joy_twist.TestJoyTwist):
 
     def setUp(self):
         super().setUp()
         self.joy_msg['axes'] = [0.3, 0.4]
         self.joy_msg['buttons'] = [0]
+        self.expect_cmd_vel['linear']['x'] = 0.8
+        self.expect_cmd_vel['angular']['z'] = 0.9
