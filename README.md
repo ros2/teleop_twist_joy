@@ -19,12 +19,6 @@ The package comes with the `teleop_node` that republishes `sensor_msgs/msg/Joy` 
   - Command velocity messages arising from Joystick commands.
 
 ## Parameters
-- `axis_angular (int, default: 0)`
-  - Joystick axis to use for angular movement control.
-  
-- `axis_linear (int, default: 1)`
-  - Joystick axis to use for linear movement control.
-  
 - `require_enable_button (bool, default: true)`
   - Whether to require the enable button for enabling movement.
 
@@ -33,18 +27,46 @@ The package comes with the `teleop_node` that republishes `sensor_msgs/msg/Joy` 
   
 - `enable_turbo_button (int, default: -1)`
   - Joystick button to enable high-speed movement (disabled when -1).
-  
-- `scale_angular (double, default: 1.0)`
-  - Scale to apply to joystick angular axis.
-  
-- `scale_angluar_turbo (double, default: 1.0)`
-  - Scale to apply to joystick angular axis for high-speed movement.
-    
-- `scale_linear (double, default: 0.5)`
+
+- `axis_linear.<axis>`
+  - Joystick axis to use for linear movement control.
+  - `axis_linear.x (int, default: 5)`
+  - `axis_linear.y (int, default: -1)`
+  - `axis_linear.z (int, default: -1)`
+
+- `scale_linear.<axis>`
   - Scale to apply to joystick linear axis for regular-speed movement.
-  
-- `scale_linear_turbo (double, default: 1.0)`
+  - `axis_linear.x (double, default: 0.5)`
+  - `axis_linear.y (double, default: 0.0)`
+  - `axis_linear.z (double, default: 0.0)`
+
+- `scale_linear_turbo.<axis>`
   - Scale to apply to joystick linear axis for high-speed movement.
+  - `axis_linear.x (double, default: 1.0)`
+  - `axis_linear.y (double, default: 0.0)`
+  - `axis_linear.z (double, default: 0.0)`
+
+- `axis_angular.<axis>`
+  - Joystick axis to use for angular movement control.
+  - `axis_angular.yaw (int, default: 2)`
+  - `axis_angular.pitch (int, default: -1)`
+  - `axis_angular.roll (int, default: -1)`
+  
+- `scale_angular.<axis>`
+  - Scale to apply to joystick angular axis.
+  - `axis_angular.yaw (double, default: 0.5)`
+  - `axis_angular.pitch (double, default: 0.0)`
+  - `axis_angular.roll (double, default: 0.0)`
+  
+- `scale_angular_turbo.<axis>`
+  - Scale to apply to joystick angular axis for high-speed movement.
+  - `axis_angular.yaw (double, default: 1.0)`
+  - `axis_angular.pitch (double, default: 0.0)`
+  - `axis_angular.roll (double, default: 0.0)`
+    
+
+  
+
 
 # Usage
 
