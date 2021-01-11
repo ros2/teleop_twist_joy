@@ -36,15 +36,15 @@ The package comes with the `teleop_node` that republishes `sensor_msgs/msg/Joy` 
 
 - `scale_linear.<axis>`
   - Scale to apply to joystick linear axis for regular-speed movement.
-  - `axis_linear.x (double, default: 0.5)`
-  - `axis_linear.y (double, default: 0.0)`
-  - `axis_linear.z (double, default: 0.0)`
+  - `scale_linear.x (double, default: 0.5)`
+  - `scale_linear.y (double, default: 0.0)`
+  - `scale_linear.z (double, default: 0.0)`
 
 - `scale_linear_turbo.<axis>`
   - Scale to apply to joystick linear axis for high-speed movement.
-  - `axis_linear.x (double, default: 1.0)`
-  - `axis_linear.y (double, default: 0.0)`
-  - `axis_linear.z (double, default: 0.0)`
+  - `scale_linear_turbo.x (double, default: 1.0)`
+  - `scale_linear_turbo.y (double, default: 0.0)`
+  - `scale_linear_turbo.z (double, default: 0.0)`
 
 - `axis_angular.<axis>`
   - Joystick axis to use for angular movement control.
@@ -54,15 +54,15 @@ The package comes with the `teleop_node` that republishes `sensor_msgs/msg/Joy` 
   
 - `scale_angular.<axis>`
   - Scale to apply to joystick angular axis.
-  - `axis_angular.yaw (double, default: 0.5)`
-  - `axis_angular.pitch (double, default: 0.0)`
-  - `axis_angular.roll (double, default: 0.0)`
+  - `scale_angular.yaw (double, default: 0.5)`
+  - `scale_angular.pitch (double, default: 0.0)`
+  - `scale_angular.roll (double, default: 0.0)`
   
 - `scale_angular_turbo.<axis>`
   - Scale to apply to joystick angular axis for high-speed movement.
-  - `axis_angular.yaw (double, default: 1.0)`
-  - `axis_angular.pitch (double, default: 0.0)`
-  - `axis_angular.roll (double, default: 0.0)`
+  - `scale_angular_turbo.yaw (double, default: 1.0)`
+  - `scale_angular_turbo.pitch (double, default: 0.0)`
+  - `scale_angular_turbo.roll (double, default: 0.0)`
     
 
   
