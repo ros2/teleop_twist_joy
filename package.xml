@@ -3,11 +3,14 @@
   <name>teleop_twist_joy</name>
   <version>2.4.3</version>
   <description>Generic joystick teleop for twist robots.</description>
+
+  <maintainer email="alejandro@openrobotics.org">Alejandro Hernandez Cordero</maintainer>
   <maintainer email="clalancette@openrobotics.org">Chris Lalancette</maintainer>
 
   <license>BSD</license>
 
   <url type="website">http://wiki.ros.org/teleop_twist_joy</url>
+
   <author email="mpurvis@clearpathrobotics.com">Mike Purvis</author>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
