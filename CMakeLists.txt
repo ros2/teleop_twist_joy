@@ -80,6 +80,7 @@ if(BUILD_TESTING)
     test/turbo_angular_enable_joy_launch_test.py
 
     test/no_require_enable_joy_launch_test.py
+    test/publish_stamped_twist_joy_launch_test.py
   )
 
   find_package(launch_testing_ament_cmake REQUIRED)
