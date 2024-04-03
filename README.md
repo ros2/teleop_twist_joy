@@ -9,13 +9,14 @@ This node provides no rate limiting or autorepeat functionality. It is expected 
 
 ## Executables
 The package comes with the `teleop_node` that republishes `sensor_msgs/msg/Joy` messages as scaled `geometry_msgs/msg/Twist` messages.
+The message type can be changed to `geometry_msgs/msg/TwistStamped` by the `publish_stamped_twist` parameter.
 
 ## Subscribed Topics
 - `joy (sensor_msgs/msg/Joy)`
   - Joystick messages to be translated to velocity commands.
 
 ## Published Topics
-- `cmd_vel (geometry_msgs/msg/Twist)`
+- `cmd_vel (geometry_msgs/msg/Twist or geometry_msgs/msg/TwistStamped)`
   - Command velocity messages arising from Joystick commands.
 
 ## Parameters
@@ -67,6 +68,11 @@ The package comes with the `teleop_node` that republishes `sensor_msgs/msg/Joy` 
 - `inverted_reverse (bool, default: false)`
   - Whether to invert turning left-right while reversing (useful for differential wheeled robots).
 
+- `publish_stamped_twist (bool, default: false)`
+  - Whether to publish `geometry_msgs/msg/TwistStamped` for command velocity messages.
+
+- `frame (string, default: 'teleop_twist_joy')`
+  - Frame name used for the header of TwistStamped messages.
 
 
 # Usage
@@ -94,3 +100,5 @@ __Note:__ this launch file also launches the `joy` node so do not run it separat
   - Joystick device to use
 - `config_filepath (string, default: '/opt/ros/<rosdistro>/share/teleop_twist_joy/config/' + LaunchConfig('joy_config') + '.config.yaml')`
   - Path to config files
+- `publish_stamped_twist (bool, default: false)`
+  - Whether to publish `geometry_msgs/msg/TwistStamped` for command velocity messages.
