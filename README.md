@@ -64,11 +64,7 @@ The message type can be changed to `geometry_msgs/msg/TwistStamped` by the `publ
   - `scale_angular_turbo.yaw (double, default: 1.0)`
   - `scale_angular_turbo.pitch (double, default: 0.0)`
   - `scale_angular_turbo.roll (double, default: 0.0)`
-    
 
-<<<<<<< HEAD
-  
-=======
 - `inverted_reverse (bool, default: false)`
   - Whether to invert turning left-right while reversing (useful for differential wheeled robots).
 
@@ -77,7 +73,6 @@ The message type can be changed to `geometry_msgs/msg/TwistStamped` by the `publ
 
 - `frame (string, default: 'teleop_twist_joy')`
   - Frame name used for the header of TwistStamped messages.
->>>>>>> 76cd650 (Add an option to publish TwistStamped (#42))
 
 
 # Usage

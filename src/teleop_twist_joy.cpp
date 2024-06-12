@@ -52,14 +52,10 @@ namespace teleop_twist_joy
 struct TeleopTwistJoy::Impl
 {
   void joyCallback(const sensor_msgs::msg::Joy::SharedPtr joy);
-<<<<<<< HEAD
-  void sendCmdVelMsg(const sensor_msgs::msg::Joy::SharedPtr, const std::string& which_map);
-=======
   void sendCmdVelMsg(const sensor_msgs::msg::Joy::SharedPtr, const std::string & which_map);
   void fillCmdVelMsg(
     const sensor_msgs::msg::Joy::SharedPtr, const std::string & which_map,
     geometry_msgs::msg::Twist * cmd_vel_msg);
->>>>>>> 76cd650 (Add an option to publish TwistStamped (#42))
 
   rclcpp::Subscription<sensor_msgs::msg::Joy>::SharedPtr joy_sub;
   rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_pub;
@@ -88,10 +84,6 @@ TeleopTwistJoy::TeleopTwistJoy(const rclcpp::NodeOptions& options) : Node("teleo
 {
   pimpl_ = new Impl;
 
-<<<<<<< HEAD
-  pimpl_->cmd_vel_pub = this->create_publisher<geometry_msgs::msg::Twist>("cmd_vel", 10);
-  pimpl_->joy_sub = this->create_subscription<sensor_msgs::msg::Joy>("joy", rclcpp::QoS(10),
-=======
   pimpl_->clock = this->get_clock();
 
   pimpl_->publish_stamped_twist = this->declare_parameter("publish_stamped_twist", false);
@@ -105,7 +97,6 @@ TeleopTwistJoy::TeleopTwistJoy(const rclcpp::NodeOptions& options) : Node("teleo
   }
   pimpl_->joy_sub = this->create_subscription<sensor_msgs::msg::Joy>(
     "joy", rclcpp::QoS(10),
->>>>>>> 76cd650 (Add an option to publish TwistStamped (#42))
     std::bind(&TeleopTwistJoy::Impl::joyCallback, this->pimpl_, std::placeholders::_1));
 
   pimpl_->require_enable_button = this->declare_parameter("require_enable_button", true);
@@ -366,19 +357,12 @@ void TeleopTwistJoy::Impl::sendCmdVelMsg(const sensor_msgs::msg::Joy::SharedPtr 
   sent_disable_msg = false;
 }
 
-<<<<<<< HEAD
-  cmd_vel_msg->linear.x = getVal(joy_msg, axis_linear_map, scale_linear_map[which_map], "x");
-=======
 void TeleopTwistJoy::Impl::fillCmdVelMsg(
   const sensor_msgs::msg::Joy::SharedPtr joy_msg,
   const std::string & which_map,
   geometry_msgs::msg::Twist * cmd_vel_msg)
 {
-  double lin_x = getVal(joy_msg, axis_linear_map, scale_linear_map[which_map], "x");
-  double ang_z = getVal(joy_msg, axis_angular_map, scale_angular_map[which_map], "yaw");
-
-  cmd_vel_msg->linear.x = lin_x;
->>>>>>> 76cd650 (Add an option to publish TwistStamped (#42))
+  cmd_vel_msg->linear.x = getVal(joy_msg, axis_linear_map, scale_linear_map[which_map], "x");
   cmd_vel_msg->linear.y = getVal(joy_msg, axis_linear_map, scale_linear_map[which_map], "y");
   cmd_vel_msg->linear.z = getVal(joy_msg, axis_linear_map, scale_linear_map[which_map], "z");
   cmd_vel_msg->angular.z = getVal(joy_msg, axis_angular_map, scale_angular_map[which_map], "yaw");
