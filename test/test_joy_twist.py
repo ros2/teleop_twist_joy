@@ -41,7 +41,7 @@ class TestJoyTwist(unittest.TestCase):
                                       automatically_declare_parameters_from_overrides=True)
         self.message_pump = launch_testing_ros.MessagePump(self.node, context=self.context)
         self.pub = self.node.create_publisher(sensor_msgs.msg.Joy, 'joy', 1)
-        if not hasattr(self, "cmd_vel_msg_type"):
+        if not hasattr(self, 'cmd_vel_msg_type'):
             self.cmd_vel_msg_type = geometry_msgs.msg.Twist
         self.sub = self.node.create_subscription(self.cmd_vel_msg_type,
                                                  'cmd_vel', self.callback, 1)
