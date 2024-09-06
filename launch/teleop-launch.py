@@ -15,7 +15,7 @@ def generate_launch_description():
     return launch.LaunchDescription([
         launch.actions.DeclareLaunchArgument('joy_vel', default_value='cmd_vel'),
         launch.actions.DeclareLaunchArgument('joy_config', default_value='ps3'),
-        launch.actions.DeclareLaunchArgument('joy_dev', default_value='/dev/input/js0'),
+        launch.actions.DeclareLaunchArgument('joy_dev', default_value='0'),
         launch.actions.DeclareLaunchArgument('publish_stamped_twist', default_value='false'),
         launch.actions.DeclareLaunchArgument('config_filepath', default_value=[
             launch.substitutions.TextSubstitution(text=os.path.join(
@@ -25,7 +25,7 @@ def generate_launch_description():
         launch_ros.actions.Node(
             package='joy', executable='joy_node', name='joy_node',
             parameters=[{
-                'dev': joy_dev,
+                'device_id': joy_dev,
                 'deadzone': 0.3,
                 'autorepeat_rate': 20.0,
             }]),
