@@ -2,6 +2,12 @@
 Changelog for package teleop_twist_joy
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.5.2 (2024-09-09)
+------------------
+* Update the launch file to work with modern joy. (`#52 <https://github.com/ros2/teleop_twist_joy/issues/52>`_) (`#54 <https://github.com/ros2/teleop_twist_joy/issues/54>`_)
+  Co-authored-by: Chris Lalancette <clalancette@gmail.com>
+* Contributors: mergify[bot]
+
 2.5.1 (2024-06-17)
 ------------------
 * Add an option to publish TwistStamped (`#42 <https://github.com/ros2/teleop_twist_joy/issues/42>`_) (`#46 <https://github.com/ros2/teleop_twist_joy/issues/46>`_)
