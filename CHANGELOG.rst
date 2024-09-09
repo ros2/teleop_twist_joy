@@ -2,6 +2,18 @@
 Changelog for package teleop_twist_joy
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.4.7 (2024-09-09)
+------------------
+* Update the launch file to work with modern joy. (`#52 <https://github.com/ros2/teleop_twist_joy/issues/52>`_) (`#53 <https://github.com/ros2/teleop_twist_joy/issues/53>`_)
+  It should use "device_id" (not "dev") as the parameter,
+  and the parameter should be a number, not a path (this is
+  effectively the SDL device number, which is cross-platform).
+  (cherry picked from commit e4856e4afeda704547bdb43edc29d008b07f15d9)
+  # Conflicts:
+  #	README.md
+  Co-authored-by: Chris Lalancette <clalancette@gmail.com>
+* Contributors: mergify[bot]
+
 2.4.6 (2024-06-17)
 ------------------
 * add inverted reverse param (`#35 <https://github.com/ros2/teleop_twist_joy/issues/35>`_) (`#43 <https://github.com/ros2/teleop_twist_joy/issues/43>`_)
