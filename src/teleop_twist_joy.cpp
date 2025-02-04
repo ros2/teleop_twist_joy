@@ -61,6 +61,8 @@ namespace teleop_twist_joy
   {
     void joyCallback(const sensor_msgs::msg::Joy::SharedPtr joy);
     void sendCmdVelMsg(const sensor_msgs::msg::Joy::SharedPtr, const std::string &which_map);
+    double getVal(const sensor_msgs::msg::Joy::SharedPtr joy_msg, const std::map<std::string, int64_t> &axis_map,
+                  const std::map<std::string, double> &scale_map, const std::string &fieldname);
 
     rclcpp::Subscription<sensor_msgs::msg::Joy>::SharedPtr joy_sub;
     rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_pub;
@@ -83,8 +85,6 @@ namespace teleop_twist_joy
     std::map<std::string, int64_t> axis_angular_map;
     std::map<std::string, std::map<std::string, double>> scale_angular_map;
     array<float, 2> motionconverter(float gauche, float droit);
-
-    bool sent_disable_msg;
   };
 
   /**
@@ -110,49 +110,49 @@ namespace teleop_twist_joy
     pimpl_->deadzone = this->declare_parameter<float>("deadzone", 0.2);
 
     std::map<std::string, int64_t> default_linear_map{
-        {"x", 4L},
-        {"y", -1L},
-        {"z", -1L},
+      {"x", 4L},
+      {"y", -1L},
+      {"z", -1L},
     };
     this->declare_parameters("axis_linear", default_linear_map);
     this->get_parameters("axis_linear", pimpl_->axis_linear_map);
 
     std::map<std::string, int64_t> default_angular_map{
-        {"yaw", 3L},
-        {"pitch", -1L},
-        {"roll", -1L},
+      {"yaw", 3L},
+      {"pitch", -1L},
+      {"roll", -1L},
     };
     this->declare_parameters("axis_angular", default_angular_map);
     this->get_parameters("axis_angular", pimpl_->axis_angular_map);
 
     std::map<std::string, double> default_scale_linear_normal_map{
-        {"x", 0.5},
-        {"y", 0.0},
-        {"z", 0.0},
+      {"x", 0.5},
+      {"y", 0.0},
+      {"z", 0.0},
     };
     this->declare_parameters("scale_linear", default_scale_linear_normal_map);
     this->get_parameters("scale_linear", pimpl_->scale_linear_map["normal"]);
 
     std::map<std::string, double> default_scale_linear_turbo_map{
-        {"x", 1.0},
-        {"y", 0.0},
-        {"z", 0.0},
+      {"x", 1.0},
+      {"y", 0.0},
+      {"z", 0.0},
     };
     this->declare_parameters("scale_linear_turbo", default_scale_linear_turbo_map);
     this->get_parameters("scale_linear_turbo", pimpl_->scale_linear_map["turbo"]);
 
     std::map<std::string, double> default_scale_angular_normal_map{
-        {"yaw", 0.5},
-        {"pitch", 0.0},
-        {"roll", 0.0},
+      {"yaw", 0.5},
+      {"pitch", 0.0},
+      {"roll", 0.0},
     };
     this->declare_parameters("scale_angular", default_scale_angular_normal_map);
     this->get_parameters("scale_angular", pimpl_->scale_angular_map["normal"]);
 
     std::map<std::string, double> default_scale_angular_turbo_map{
-        {"yaw", 1.0},
-        {"pitch", 0.0},
-        {"roll", 0.0},
+      {"yaw", 1.0},
+      {"pitch", 0.0},
+      {"roll", 0.0},
     };
     this->declare_parameters("scale_angular_turbo", default_scale_angular_turbo_map);
     this->get_parameters("scale_angular_turbo", pimpl_->scale_angular_map["turbo"]);
@@ -184,10 +184,7 @@ namespace teleop_twist_joy
                           "Turbo for angular axis %s is scale %f.", it->first.c_str(), pimpl_->scale_angular_map["turbo"][it->first]);
     }
 
-    pimpl_->sent_disable_msg = false;
-
-    auto param_callback =
-        [this](std::vector<rclcpp::Parameter> parameters)
+    auto param_callback = [this](std::vector<rclcpp::Parameter> parameters)
     {
       static std::set<std::string> intparams = {"axis_linear.x", "axis_linear.y", "axis_linear.z",
                                                 "axis_angular.yaw", "axis_angular.pitch", "axis_angular.roll",
@@ -195,7 +192,7 @@ namespace teleop_twist_joy
       static std::set<std::string> doubleparams = {"scale_linear.x", "scale_linear.y", "scale_linear.z",
                                                    "scale_linear_turbo.x", "scale_linear_turbo.y", "scale_linear_turbo.z",
                                                    "scale_angular.yaw", "scale_angular.pitch", "scale_angular.roll",
-                                                   "scale_angular_turbo.yaw", "scale_angular_turbo.pitch", "scale_angular_turbo.roll", 
+                                                   "scale_angular_turbo.yaw", "scale_angular_turbo.pitch", "scale_angular_turbo.roll",
                                                    "base_width", "deadzone"};
       static std::set<std::string> boolparams = {"require_enable_button", "require_autonomy_button"};
       auto result = rcl_interfaces::msg::SetParametersResult();
@@ -363,8 +360,8 @@ namespace teleop_twist_joy
     delete pimpl_;
   }
 
-  double getVal(const sensor_msgs::msg::Joy::SharedPtr joy_msg, const std::map<std::string, int64_t> &axis_map,
-                const std::map<std::string, double> &scale_map, const std::string &fieldname)
+  double TeleopTwistJoy::Impl::getVal(const sensor_msgs::msg::Joy::SharedPtr joy_msg, const std::map<std::string, int64_t> &axis_map,
+                                      const std::map<std::string, double> &scale_map, const std::string &fieldname)
   {
     if (axis_map.find(fieldname) == axis_map.end() ||
         axis_map.at(fieldname) == -1L ||
@@ -415,7 +412,6 @@ namespace teleop_twist_joy
     }
 
     cmd_vel_pub->publish(std::move(cmd_vel_msg));
-    sent_disable_msg = false;
   }
 
   void TeleopTwistJoy::Impl::joyCallback(const sensor_msgs::msg::Joy::SharedPtr joy_msg)
@@ -428,9 +424,8 @@ namespace teleop_twist_joy
       sendCmdVelMsg(joy_msg, "turbo");
     }
 
-    else if (require_enable_button &&
-             enable_button < static_cast<int>(joy_msg->buttons.size()) && 
-             joy_msg->buttons[enable_button])
+    else if (!require_enable_button ||
+             (enable_button < static_cast<int>(joy_msg->buttons.size()) && joy_msg->buttons[enable_button]))
     {
       if (joy_msg->buttons[track_control_button])
       {
