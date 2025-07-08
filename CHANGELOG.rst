@@ -2,6 +2,11 @@
 Changelog for package teleop_twist_joy
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.6.4 (2025-07-08)
+------------------
+* Pass configuration through to the Joy node. (`#57 <https://github.com/ros2/teleop_twist_joy/issues/57>`_)
+* Contributors: Julian Francis
+
 2.6.3 (2025-04-01)
 ------------------
 * Add PS5 controller configuration for teleop twist joy node (`#55 <https://github.com/ros2/teleop_twist_joy/issues/55>`_)
