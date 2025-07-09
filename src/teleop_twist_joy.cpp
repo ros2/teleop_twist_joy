@@ -62,7 +62,7 @@ namespace teleop_twist_joy
     void joyCallback(const sensor_msgs::msg::Joy::SharedPtr joy);
     void sendCmdVelMsg(const sensor_msgs::msg::Joy::SharedPtr, const std::string &which_map);
     double getVal(const sensor_msgs::msg::Joy::SharedPtr joy_msg, const std::map<std::string, int64_t> &axis_map,
-                  const std::map<std::string, double> &scale_map, const std::string &fieldname);
+                  const std::map<std::string, double> &scale_map, const std::string &fieldname, const std::map<std::string, double> &turbo_scale_map);
 
     rclcpp::Subscription<sensor_msgs::msg::Joy>::SharedPtr joy_sub;
     rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_pub;
@@ -70,13 +70,13 @@ namespace teleop_twist_joy
 
     bool require_enable_button;
     bool require_autonomy_button;
-    int64_t enable_button;
-    int64_t enable_turbo_button;
+    int64_t enable_axis;
+    int64_t turbo_axis;
     int64_t track_control_button;
     int64_t autonomy_button;
     float deadzone;
-    int debounce_counter = 0;
     bool track_mode = false;
+    bool track_button_latch = false;
     float base_width;
 
     std::map<std::string, int64_t> axis_linear_map;
@@ -101,8 +101,8 @@ namespace teleop_twist_joy
 
     pimpl_->require_enable_button = this->declare_parameter("require_enable_button", true);
     pimpl_->require_autonomy_button = this->declare_parameter("require_autonomy_button", true);
-    pimpl_->enable_button = this->declare_parameter("enable_button", 5);
-    pimpl_->enable_turbo_button = this->declare_parameter("enable_turbo_button", -1);
+    pimpl_->enable_axis = this->declare_parameter("enable_axis", 5);
+    pimpl_->turbo_axis = this->declare_parameter("turbo_axis", -1);
     pimpl_->track_control_button = this->declare_parameter<int>("track_control_button", 4);
     pimpl_->autonomy_button = this->declare_parameter<int>("autonomy_button", 0);
 
@@ -157,10 +157,10 @@ namespace teleop_twist_joy
     this->declare_parameters("scale_angular_turbo", default_scale_angular_turbo_map);
     this->get_parameters("scale_angular_turbo", pimpl_->scale_angular_map["turbo"]);
 
-    ROS_INFO_COND_NAMED(pimpl_->require_enable_button, "TeleopTwistJoy",
-                        "Teleop enable button %" PRId64 ".", pimpl_->enable_button);
-    ROS_INFO_COND_NAMED(pimpl_->enable_turbo_button >= 0, "TeleopTwistJoy",
-                        "Turbo on button %" PRId64 ".", pimpl_->enable_turbo_button);
+    ROS_INFO_COND_NAMED(pimpl_->enable_axis, "TeleopTwistJoy",
+                        "Teleop enable axis %" PRId64 ".", pimpl_->enable_axis);
+    ROS_INFO_COND_NAMED(pimpl_->turbo_axis >= 0, "TeleopTwistJoy",
+                        "Turbo on axis %" PRId64 ".", pimpl_->turbo_axis);
     ROS_INFO_COND_NAMED(pimpl_->track_control_button >= 0, "TeleopTwistJoy",
                         "Track control button %" PRId64 ".", pimpl_->track_control_button);
     ROS_INFO_COND_NAMED(pimpl_->require_autonomy_button, "TeleopTwistJoy",
@@ -171,7 +171,7 @@ namespace teleop_twist_joy
     {
       ROS_INFO_COND_NAMED(it->second != -1L, "TeleopTwistJoy", "Linear axis %s on %" PRId64 " at scale %f.",
                           it->first.c_str(), it->second, pimpl_->scale_linear_map["normal"][it->first]);
-      ROS_INFO_COND_NAMED(pimpl_->enable_turbo_button >= 0 && it->second != -1, "TeleopTwistJoy",
+      ROS_INFO_COND_NAMED(pimpl_->turbo_axis >= 0 && it->second != -1, "TeleopTwistJoy",
                           "Turbo for linear axis %s is scale %f.", it->first.c_str(), pimpl_->scale_linear_map["turbo"][it->first]);
     }
 
@@ -180,7 +180,7 @@ namespace teleop_twist_joy
     {
       ROS_INFO_COND_NAMED(it->second != -1L, "TeleopTwistJoy", "Angular axis %s on %" PRId64 " at scale %f.",
                           it->first.c_str(), it->second, pimpl_->scale_angular_map["normal"][it->first]);
-      ROS_INFO_COND_NAMED(pimpl_->enable_turbo_button >= 0 && it->second != -1, "TeleopTwistJoy",
+      ROS_INFO_COND_NAMED(pimpl_->turbo_axis >= 0 && it->second != -1, "TeleopTwistJoy",
                           "Turbo for angular axis %s is scale %f.", it->first.c_str(), pimpl_->scale_angular_map["turbo"][it->first]);
     }
 
@@ -188,7 +188,7 @@ namespace teleop_twist_joy
     {
       static std::set<std::string> intparams = {"axis_linear.x", "axis_linear.y", "axis_linear.z",
                                                 "axis_angular.yaw", "axis_angular.pitch", "axis_angular.roll",
-                                                "enable_button", "enable_turbo_button", "track_control_button", "autonomy_button"};
+                                                "enable_axis", "turbo_axis", "track_control_button", "autonomy_button"};
       static std::set<std::string> doubleparams = {"scale_linear.x", "scale_linear.y", "scale_linear.z",
                                                    "scale_linear_turbo.x", "scale_linear_turbo.y", "scale_linear_turbo.z",
                                                    "scale_angular.yaw", "scale_angular.pitch", "scale_angular.roll",
@@ -244,13 +244,13 @@ namespace teleop_twist_joy
         {
           this->pimpl_->require_autonomy_button = parameter.get_value<rclcpp::PARAMETER_BOOL>();
         }
-        if (parameter.get_name() == "enable_button")
+        if (parameter.get_name() == "enable_axis")
         {
-          this->pimpl_->enable_button = parameter.get_value<rclcpp::PARAMETER_INTEGER>();
+          this->pimpl_->enable_axis = parameter.get_value<rclcpp::PARAMETER_INTEGER>();
         }
-        else if (parameter.get_name() == "enable_turbo_button")
+        else if (parameter.get_name() == "turbo_axis")
         {
-          this->pimpl_->enable_turbo_button = parameter.get_value<rclcpp::PARAMETER_INTEGER>();
+          this->pimpl_->turbo_axis = parameter.get_value<rclcpp::PARAMETER_INTEGER>();
         }
         else if (parameter.get_name() == "track_control_button")
         {
@@ -360,8 +360,10 @@ namespace teleop_twist_joy
     delete pimpl_;
   }
 
+    
   double TeleopTwistJoy::Impl::getVal(const sensor_msgs::msg::Joy::SharedPtr joy_msg, const std::map<std::string, int64_t> &axis_map,
-                                      const std::map<std::string, double> &scale_map, const std::string &fieldname)
+                                      const std::map<std::string, double> &scale_map, const std::string &fieldname,
+                                      const std::map<std::string, double> &turbo_scale_map)
   {
     if (axis_map.find(fieldname) == axis_map.end() ||
         axis_map.at(fieldname) == -1L ||
@@ -371,22 +373,26 @@ namespace teleop_twist_joy
       return 0.0;
     }
 
-    return joy_msg->axes[axis_map.at(fieldname)] * scale_map.at(fieldname);
+    // Turbo is applied as a ramp based on the axis value
+    double turbo_ramp = turbo_scale_map.at(fieldname) - scale_map.at(fieldname);
+    double turbo_gain = (joy_msg->axes[turbo_axis] - 1) * -0.5 * turbo_ramp;
+
+    return joy_msg->axes[axis_map.at(fieldname)] * (scale_map.at(fieldname) + turbo_gain);
   }
 
   void TeleopTwistJoy::Impl::sendCmdVelMsg(const sensor_msgs::msg::Joy::SharedPtr joy_msg,
-                                           const std::string &which_map)
+                                           const std::string &which_map)  
   {
     // Initializes with zeros by default.
     auto cmd_vel_msg = std::make_unique<geometry_msgs::msg::Twist>();
     if (!track_mode)
     {
-      cmd_vel_msg->linear.x = getVal(joy_msg, axis_linear_map, scale_linear_map[which_map], "x");
-      cmd_vel_msg->linear.y = getVal(joy_msg, axis_linear_map, scale_linear_map[which_map], "y");
-      cmd_vel_msg->linear.z = getVal(joy_msg, axis_linear_map, scale_linear_map[which_map], "z");
-      cmd_vel_msg->angular.z = getVal(joy_msg, axis_angular_map, scale_angular_map[which_map], "yaw");
-      cmd_vel_msg->angular.y = getVal(joy_msg, axis_angular_map, scale_angular_map[which_map], "pitch");
-      cmd_vel_msg->angular.x = getVal(joy_msg, axis_angular_map, scale_angular_map[which_map], "roll");
+      cmd_vel_msg->linear.x = getVal(joy_msg, axis_linear_map, scale_linear_map[which_map], "x", scale_linear_map["turbo"]);
+      cmd_vel_msg->linear.y = getVal(joy_msg, axis_linear_map, scale_linear_map[which_map], "y", scale_linear_map["turbo"]);
+      cmd_vel_msg->linear.z = getVal(joy_msg, axis_linear_map, scale_linear_map[which_map], "z", scale_linear_map["turbo"]);
+      cmd_vel_msg->angular.z = getVal(joy_msg, axis_angular_map, scale_angular_map[which_map], "yaw", scale_angular_map["turbo"]);
+      cmd_vel_msg->angular.y = getVal(joy_msg, axis_angular_map, scale_angular_map[which_map], "pitch", scale_angular_map["turbo"]);
+      cmd_vel_msg->angular.x = getVal(joy_msg, axis_angular_map, scale_angular_map[which_map], "roll", scale_angular_map["turbo"]);
     }
 
     else if (scale_linear_map[which_map].find("x") != scale_linear_map[which_map].end() &&
@@ -417,25 +423,9 @@ namespace teleop_twist_joy
   void TeleopTwistJoy::Impl::joyCallback(const sensor_msgs::msg::Joy::SharedPtr joy_msg)
   {
 
-    if (enable_turbo_button >= 0 &&
-        enable_turbo_button < static_cast<int>(joy_msg->buttons.size()) &&
-        joy_msg->buttons[enable_turbo_button])
+    if (enable_axis >= 0 && enable_axis < static_cast<int>(joy_msg->axes.size()) &&
+        joy_msg->axes[enable_axis] < 0)
     {
-      sendCmdVelMsg(joy_msg, "turbo");
-    }
-
-    else if (!require_enable_button ||
-             (enable_button < static_cast<int>(joy_msg->buttons.size()) && joy_msg->buttons[enable_button]))
-    {
-      if (joy_msg->buttons[track_control_button])
-      {
-        if (debounce_counter > 4)
-        {
-          track_mode = !track_mode;
-          debounce_counter = 0;
-        }
-        debounce_counter++;
-      }
       sendCmdVelMsg(joy_msg, "normal");
     }
 
@@ -445,6 +435,20 @@ namespace teleop_twist_joy
       std_msgs::msg::Bool lock_autonomy_msg;
       lock_autonomy_msg.data = !joy_msg->buttons[autonomy_button];
       lock_autonomy_pub->publish(lock_autonomy_msg);
+    }
+
+
+    if (joy_msg->buttons[track_control_button])
+    {
+        if (!track_button_latch)
+        {
+            track_mode = !track_mode;
+            track_button_latch = true;
+        }
+    }
+    else
+    {
+        track_button_latch = false;
     }
   }
 
