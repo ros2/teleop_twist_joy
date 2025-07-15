@@ -259,6 +259,8 @@ TeleopTwistJoy::TeleopTwistJoy(const rclcpp::NodeOptions & options)
         } else if (parameter.get_name() == "scale_angular.roll") {
           this->pimpl_->scale_angular_map["normal"]["roll"] =
             parameter.get_value<rclcpp::PARAMETER_DOUBLE>();
+        } else if (parameter.get_name() == "frame") {
+          this->pimpl_->frame_id = parameter.get_value<rclcpp::PARAMETER_STRING>();
         }
       }
       return result;
