@@ -2,6 +2,12 @@
 Changelog for package teleop_twist_joy
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+2.6.5 (2025-07-16)
+------------------
+* Add missing dynamic parameter update for `frame` (`#62 <https://github.com/ros2/teleop_twist_joy/issues/62>`_)
+  Co-authored-by: sebastian zarnack <sebastian.zarnack@eas.iis.fraunhofer.de>
+* Contributors: Zarnack
+
 2.6.4 (2025-07-08)
 ------------------
 * Pass configuration through to the Joy node. (`#57 <https://github.com/ros2/teleop_twist_joy/issues/57>`_)
