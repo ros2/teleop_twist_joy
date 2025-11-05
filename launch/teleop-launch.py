@@ -10,6 +10,7 @@ def generate_launch_description():
     joy_config = launch.substitutions.LaunchConfiguration('joy_config')
     joy_dev = launch.substitutions.LaunchConfiguration('joy_dev')
     publish_stamped_twist = launch.substitutions.LaunchConfiguration('publish_stamped_twist')
+    cmd_vel_reliable = launch.substitutions.LaunchConfiguration('cmd_vel_reliable')
     config_filepath = launch.substitutions.LaunchConfiguration('config_filepath')
 
     return launch.LaunchDescription([
@@ -17,6 +18,7 @@ def generate_launch_description():
         launch.actions.DeclareLaunchArgument('joy_config', default_value='ps3'),
         launch.actions.DeclareLaunchArgument('joy_dev', default_value='0'),
         launch.actions.DeclareLaunchArgument('publish_stamped_twist', default_value='false'),
+        launch.actions.DeclareLaunchArgument('cmd_vel_reliable', default_value='true'),
         launch.actions.DeclareLaunchArgument('config_filepath', default_value=[
             launch.substitutions.TextSubstitution(text=os.path.join(
                 get_package_share_directory('teleop_twist_joy'), 'config', '')),
@@ -32,7 +34,7 @@ def generate_launch_description():
         launch_ros.actions.Node(
             package='teleop_twist_joy', executable='teleop_node',
             name='teleop_twist_joy_node',
-            parameters=[config_filepath, {'publish_stamped_twist': publish_stamped_twist}],
+            parameters=[config_filepath, {'publish_stamped_twist': publish_stamped_twist, 'cmd_vel_reliable': cmd_vel_reliable}],
             remappings={('/cmd_vel', launch.substitutions.LaunchConfiguration('joy_vel'))},
             ),
     ])

@@ -90,14 +90,21 @@ TeleopTwistJoy::TeleopTwistJoy(const rclcpp::NodeOptions & options)
 
   pimpl_->clock = this->get_clock();
 
+  rclcpp::QoS qos(10);
+  if(this->declare_parameter("cmd_vel_reliable", true) ) {
+      qos.reliable();
+  } else {
+      qos.best_effort();
+  }
+
   pimpl_->publish_stamped_twist = this->declare_parameter("publish_stamped_twist", false);
   pimpl_->frame_id = this->declare_parameter("frame", "teleop_twist_joy");
 
   if (pimpl_->publish_stamped_twist) {
     pimpl_->cmd_vel_stamped_pub = this->create_publisher<geometry_msgs::msg::TwistStamped>(
-      "cmd_vel", 10);
+      "cmd_vel", qos);
   } else {
-    pimpl_->cmd_vel_pub = this->create_publisher<geometry_msgs::msg::Twist>("cmd_vel", 10);
+    pimpl_->cmd_vel_pub = this->create_publisher<geometry_msgs::msg::Twist>("cmd_vel", qos);
   }
   pimpl_->joy_sub = this->create_subscription<sensor_msgs::msg::Joy>(
     "joy", rclcpp::QoS(10),

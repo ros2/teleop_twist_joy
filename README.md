@@ -19,6 +19,7 @@ The message type can be changed to `geometry_msgs/msg/TwistStamped` by the `publ
 ## Published Topics
 - `cmd_vel (geometry_msgs/msg/Twist or geometry_msgs/msg/TwistStamped)`
   - Command velocity messages arising from Joystick commands.
+  - QoS reliability can be set by parameter cmd_vel_reliable
 
 ## Parameters
 - `require_enable_button (bool, default: true)`
@@ -103,3 +104,5 @@ __Note:__ this launch file also launches the `joy` node so do not run it separat
   - Path to config files
 - `publish_stamped_twist (bool, default: false)`
   - Whether to publish `geometry_msgs/msg/TwistStamped` for command velocity messages.
+- `cmd_vel_reliable (bool, default: true)`
+  - defines the reliability of topic /cmd_vel  
