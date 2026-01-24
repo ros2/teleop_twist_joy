@@ -28,7 +28,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 #include <memory>
 #include <set>
 #include <string>
-
+#include <cmath>
 #include "rcutils/logging_macros.h"
 
 #include <geometry_msgs/msg/twist.hpp>
@@ -57,7 +57,7 @@ struct TeleopTwistJoy::Impl
   void fillCmdVelMsg(
     const sensor_msgs::msg::Joy::SharedPtr, const std::string & which_map,
     geometry_msgs::msg::Twist * cmd_vel_msg);
-
+  double getAxisValue(const sensor_msgs::msg::Joy::SharedPtr joy, int64_t axis_index) const;
   rclcpp::Subscription<sensor_msgs::msg::Joy>::SharedPtr joy_sub;
   rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_pub;
   rclcpp::Publisher<geometry_msgs::msg::TwistStamped>::SharedPtr cmd_vel_stamped_pub;
@@ -70,6 +70,7 @@ struct TeleopTwistJoy::Impl
   int64_t enable_turbo_button;
 
   bool inverted_reverse;
+  bool normalize_axes;
 
   std::map<std::string, int64_t> axis_linear_map;
   std::map<std::string, std::map<std::string, double>> scale_linear_map;
@@ -110,6 +111,8 @@ TeleopTwistJoy::TeleopTwistJoy(const rclcpp::NodeOptions & options)
   pimpl_->enable_turbo_button = this->declare_parameter("enable_turbo_button", -1);
 
   pimpl_->inverted_reverse = this->declare_parameter("inverted_reverse", false);
+
+  pimpl_->normalize_axes = this->declare_parameter("normalize_axes", false);
 
   std::map<std::string, int64_t> default_linear_map{
     {"x", 5L},
@@ -312,8 +315,24 @@ void TeleopTwistJoy::Impl::fillCmdVelMsg(
   const std::string & which_map,
   geometry_msgs::msg::Twist * cmd_vel_msg)
 {
-  double lin_x = getVal(joy_msg, axis_linear_map, scale_linear_map[which_map], "x");
-  double ang_z = getVal(joy_msg, axis_angular_map, scale_angular_map[which_map], "yaw");
+  const int64_t lin_axis = axis_linear_map.count("x") ? axis_linear_map["x"] : -1L;
+  const int64_t ang_axis = axis_angular_map.count("yaw") ? axis_angular_map["yaw"] : -1L;
+
+  double raw_lin_x = getAxisValue(joy_msg, lin_axis);
+  double raw_ang_z = getAxisValue(joy_msg, ang_axis);
+
+  if (normalize_axes)
+  {
+    const double magnitude = std::hypot(raw_lin_x, raw_ang_z);
+    if (magnitude > 1.0)
+    {
+      raw_lin_x /= magnitude;
+      raw_ang_z /= magnitude;
+    }
+  }
+
+  double lin_x = raw_lin_x * scale_linear_map[which_map]["x"];
+  double ang_z = raw_ang_z * scale_angular_map[which_map]["yaw"];
 
   cmd_vel_msg->linear.x = lin_x;
   cmd_vel_msg->linear.y = getVal(joy_msg, axis_linear_map, scale_linear_map[which_map], "y");
@@ -321,6 +340,14 @@ void TeleopTwistJoy::Impl::fillCmdVelMsg(
   cmd_vel_msg->angular.z = (lin_x < 0.0 && inverted_reverse) ? -ang_z : ang_z;
   cmd_vel_msg->angular.y = getVal(joy_msg, axis_angular_map, scale_angular_map[which_map], "pitch");
   cmd_vel_msg->angular.x = getVal(joy_msg, axis_angular_map, scale_angular_map[which_map], "roll");
+}
+
+double TeleopTwistJoy::Impl::getAxisValue(const sensor_msgs::msg::Joy::SharedPtr joy_msg, int64_t axis_index) const
+{
+  if (axis_index < 0 || static_cast<size_t>(axis_index) >= joy_msg->axes.size()) {
+    return 0.0;
+  }
+  return joy_msg->axes[static_cast<size_t>(axis_index)];
 }
 
 void TeleopTwistJoy::Impl::joyCallback(const sensor_msgs::msg::Joy::SharedPtr joy_msg)
