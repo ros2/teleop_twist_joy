@@ -321,11 +321,9 @@ void TeleopTwistJoy::Impl::fillCmdVelMsg(
   double raw_lin_x = getAxisValue(joy_msg, lin_axis);
   double raw_ang_z = getAxisValue(joy_msg, ang_axis);
 
-  if (normalize_axes)
-  {
+  if (normalize_axes) {
     const double magnitude = std::hypot(raw_lin_x, raw_ang_z);
-    if (magnitude > 1.0)
-    {
+    if (magnitude > 1.0) {
       raw_lin_x /= magnitude;
       raw_ang_z /= magnitude;
     }
@@ -342,7 +340,9 @@ void TeleopTwistJoy::Impl::fillCmdVelMsg(
   cmd_vel_msg->angular.x = getVal(joy_msg, axis_angular_map, scale_angular_map[which_map], "roll");
 }
 
-double TeleopTwistJoy::Impl::getAxisValue(const sensor_msgs::msg::Joy::SharedPtr joy_msg, int64_t axis_index) const
+double TeleopTwistJoy::Impl::getAxisValue(
+  const sensor_msgs::msg::Joy::SharedPtr joy_msg,
+  int64_t axis_index) const
 {
   if (axis_index < 0 || static_cast<size_t>(axis_index) >= joy_msg->axes.size()) {
     return 0.0;
